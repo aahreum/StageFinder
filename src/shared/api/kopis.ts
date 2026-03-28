@@ -3,6 +3,8 @@ import { XMLParser } from "fast-xml-parser";
 const BASE_URL = "https://kopis.or.kr/openApi/restful/pblprfr";
 const parser = new XMLParser();
 
+const DATE_REGEX = /^\d{8}$/;
+
 export interface KopisPerformanceRaw {
   mt20id: string;    // 공연 ID
   prfnm: string;     // 공연명
@@ -28,8 +30,12 @@ export interface FetchPerformancesParams {
 export async function fetchPerformances(
   params: FetchPerformancesParams
 ): Promise<KopisPerformanceRaw[]> {
-  const apiKey = process.env.KOPIS_API_KEY;
+  const apiKey = process.env.KOPIS_API_KEY?.trim();
   if (!apiKey) throw new Error("KOPIS_API_KEY 환경변수가 설정되지 않았습니다.");
+
+  if (!DATE_REGEX.test(params.stdate) || !DATE_REGEX.test(params.eddate)) {
+    throw new Error("날짜 형식이 올바르지 않습니다. YYYYMMDD 형식으로 입력하세요.");
+  }
 
   const query = new URLSearchParams({
     service: apiKey,
@@ -42,12 +48,21 @@ export async function fetchPerformances(
   });
 
   const res = await fetch(`${BASE_URL}?${query}`, { next: { revalidate: 3600 } });
-  if (!res.ok) throw new Error(`KOPIS API 오류: ${res.status}`);
+  if (!res.ok) {
+    const errorBody = await res.text().catch(() => "Unknown error");
+    throw new Error(`KOPIS API 오류: ${res.status} - ${errorBody}`);
+  }
 
   const xml = await res.text();
-  const parsed = parser.parse(xml);
-  const db = parsed?.dbs?.db;
 
+  let parsed: ReturnType<typeof parser.parse>;
+  try {
+    parsed = parser.parse(xml);
+  } catch {
+    throw new Error("KOPIS API 응답 파싱 실패: 유효하지 않은 XML 형식");
+  }
+
+  const db = parsed?.dbs?.db;
   if (!db) return [];
 
   // 단일 결과는 객체, 복수 결과는 배열로 반환됨
