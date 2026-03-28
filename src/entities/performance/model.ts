@@ -2,21 +2,30 @@ import type { KopisPerformanceRaw } from "@/shared";
 
 export type PerformanceStatus = "예정" | "공연중" | "완료";
 
+const STATUS_MAP: Record<string, PerformanceStatus> = {
+  예정: "예정",
+  공연중: "공연중",
+  완료: "완료",
+};
+
 export interface Performance {
-  id: string;             // 공연 ID (mt20id)
-  title: string;          // 공연명
-  startDate: string;      // 공연 시작일 (YYYY.MM.DD)
-  endDate: string;        // 공연 종료일 (YYYY.MM.DD)
-  venue: string;          // 공연시설명
-  poster: string;         // 포스터 이미지 URL
-  area: string;           // 지역
-  genre: string;          // 장르명
-  isOpenRun: boolean;     // 오픈런 여부
+  id: string;
+  title: string;
+  startDate: string;      // YYYY.MM.DD
+  endDate: string;        // YYYY.MM.DD
+  venue: string;
+  poster: string;
+  area: string;
+  genre: string;
+  isOpenRun: boolean;
   status: PerformanceStatus;
 }
 
 /** KopisPerformanceRaw → Performance 변환 */
 export function toPerformance(raw: KopisPerformanceRaw): Performance {
+  const status = STATUS_MAP[raw.prfstate];
+  if (!status) throw new Error(`알 수 없는 공연 상태: ${raw.prfstate}`);
+
   return {
     id: raw.mt20id,
     title: raw.prfnm,
@@ -27,6 +36,6 @@ export function toPerformance(raw: KopisPerformanceRaw): Performance {
     area: raw.area,
     genre: raw.genrenm,
     isOpenRun: raw.openrun === "Y",
-    status: raw.prfstate as PerformanceStatus,
+    status,
   };
 }

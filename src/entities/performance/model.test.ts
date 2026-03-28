@@ -72,4 +72,12 @@ describe("toPerformance", () => {
       expect(result.status).toBe(prfstate);
     });
   });
+
+  it("알 수 없는 prfstate일 때 에러를 던져야 한다", () => {
+    // Given
+    const raw: KopisPerformanceRaw = { ...baseRaw, prfstate: "알수없음" };
+
+    // When / Then
+    expect(() => toPerformance(raw)).toThrow("알 수 없는 공연 상태: 알수없음");
+  });
 });
