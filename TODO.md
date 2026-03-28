@@ -29,7 +29,7 @@
   - KOPIS API 호출 함수 구현
   - ✅ 검증: 데이터 정상 반환
 
-- [ ] create-performance-type
+- [x] create-performance-type
   - 공연 타입 정의
   - ✅ 검증: 타입 에러 없음
 
