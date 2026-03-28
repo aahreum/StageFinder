@@ -2,7 +2,7 @@
 
 ## Phase 1: Setup
 
-- [ ] init-next-app
+- [x] init-next-app
   - Next.js App Router 프로젝트 생성
   - pnpm 사용
   - ✅ 검증: dev 서버 정상 실행
