@@ -25,7 +25,7 @@
 
 ## Phase 2: 공연 리스트
 
-- [ ] fetch-performances-from-kopis
+- [x] fetch-performances-from-kopis
   - KOPIS API 호출 함수 구현
   - ✅ 검증: 데이터 정상 반환
 
