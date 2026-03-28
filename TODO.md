@@ -7,7 +7,7 @@
   - pnpm 사용
   - ✅ 검증: dev 서버 정상 실행
 
-- [ ] setup-tailwind
+- [x] setup-tailwind
   - Tailwind 설정
   - 글로벌 스타일 적용
   - ✅ 검증: Tailwind 클래스 정상 적용
