@@ -16,7 +16,7 @@
   - src/app, shared, entities, features, widgets 생성
   - ✅ 검증: 구조가 FSD 규칙에 맞음
 
-- [ ] setup-supabase-client
+- [x] setup-supabase-client
   - supabase client 생성
   - 환경변수 연결
   - ✅ 검증: 클라이언트 정상 생성
