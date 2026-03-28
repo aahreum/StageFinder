@@ -31,6 +31,7 @@ You MUST follow todo.md.
 - Only output necessary code
 - Use TypeScript
 - Follow existing structure
+- Write comments in Korean
 - If unsure, ask
 
 ---
