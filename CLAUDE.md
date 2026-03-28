@@ -45,10 +45,58 @@ You MUST follow todo.md.
 
 ---
 
+## Architecture (FSD)
+
+- app/: routing only
+- shared/: common code
+- entities/: domain models
+- features/: user actions
+- widgets/: UI composition
+
+Do NOT put business logic in app/
+
+---
+
+## Validation (Harness)
+
+Before implementing:
+
+- Check expected behavior
+
+After implementing:
+
+- Verify result
+- Consider edge cases
+
+If none:
+
+- Suggest simple test cases
+
+---
+
 ## Git (MANDATORY)
 
-After completing a task:
+Before starting:
+
+- create issue (gh issue create)
+
+After completing:
 
 - branch: feature/{task}
 - commit: feat: {task}
-- push and create PR (gh pr create)
+- push
+- create PR (gh pr create)
+- link PR to issue
+
+---
+
+## Sub Agents
+
+Use when needed:
+
+- code-reviewer: PR review
+- test-writer: tests
+
+After PR:
+
+- Use code-reviewer to review
