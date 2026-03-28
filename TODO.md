@@ -12,7 +12,7 @@
   - 글로벌 스타일 적용
   - ✅ 검증: Tailwind 클래스 정상 적용
 
-- [ ] setup-fsd-folder-structure
+- [x] setup-fsd-folder-structure
   - src/app, shared, entities, features, widgets 생성
   - ✅ 검증: 구조가 FSD 규칙에 맞음
 
