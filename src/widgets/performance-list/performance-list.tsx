@@ -9,9 +9,9 @@ interface Props {
 }
 
 export function PerformanceList({ params }: Props) {
-  const { data, isLoading, error } = usePerformances(params);
+  const { data, isPending, error, isError } = usePerformances(params);
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="flex flex-1 items-center justify-center text-subtle">
         불러오는 중...
@@ -19,7 +19,7 @@ export function PerformanceList({ params }: Props) {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="flex flex-1 items-center justify-center text-error">
         오류가 발생했습니다: {error.message}
