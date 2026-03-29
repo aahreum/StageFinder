@@ -13,6 +13,10 @@ import {
   genreToSlug,
   slugToGenre,
 } from '@/features/genre-filter';
+import {
+  getUniqueAreas,
+  filterByArea,
+} from '@/features/region-filter';
 import { FilterBar } from '@/widgets/filter-bar';
 import { Pagination } from '@/widgets/pagination';
 import type { FetchPerformancesParams } from '@/shared';
@@ -35,6 +39,8 @@ export function PerformanceList({ params }: Props) {
   // URL slug → KOPIS genrenm 변환
   const genreSlug = searchParams.get('genre');
   const selectedGenre = genreSlug ? slugToGenre(genreSlug) : null;
+  // 지역명(한글)을 URL에 그대로 저장 — 브라우저가 자동 인코딩/디코딩 처리
+  const selectedArea = searchParams.get('region');
 
   // URL 파라미터 일괄 업데이트
   const updateURL = useCallback(
@@ -53,6 +59,12 @@ export function PerformanceList({ params }: Props) {
   const handleGenreChange = useCallback(
     (genre: string | null) =>
       updateURL({ genre: genre ? genreToSlug(genre) : null, page: null }),
+    [updateURL],
+  );
+
+  // 지역 변경: URL에 직접 저장, page 초기화
+  const handleAreaChange = useCallback(
+    (area: string | null) => updateURL({ region: area, page: null }),
     [updateURL],
   );
 
@@ -76,17 +88,21 @@ export function PerformanceList({ params }: Props) {
 
   const list = useMemo<Performance[]>(() => data ?? [], [data]);
 
-  // genres는 전체 데이터 기준 — 페이지 변경 시에도 FilterBar 유지
+  // genres, areas는 전체 데이터 기준 — 페이지 변경 시에도 FilterBar 유지
   const genres = useMemo(
     () => getUniqueGenres(list.map((p) => p.genre)),
+    [list],
+  );
+  const areas = useMemo(
+    () => getUniqueAreas(list.map((p) => p.area)),
     [list],
   );
 
   // NOTE: 클라이언트 필터링 — FETCH_ROWS(200개) 내에서 동작
   // TODO: 서버 사이드 필터링(KOPIS shgenrenm 파라미터)으로 개선 필요
   const filtered = useMemo(
-    () => filterByGenre(list, selectedGenre),
-    [list, selectedGenre],
+    () => filterByArea(filterByGenre(list, selectedGenre), selectedArea),
+    [list, selectedGenre, selectedArea],
   );
 
   // 전체 필터 결과 기준으로 페이지네이션
@@ -119,6 +135,9 @@ export function PerformanceList({ params }: Props) {
         genres={genres}
         selectedGenre={selectedGenre}
         onGenreChange={handleGenreChange}
+        areas={areas}
+        selectedArea={selectedArea}
+        onAreaChange={handleAreaChange}
       />
 
       {paginatedList.length === 0 ? (
