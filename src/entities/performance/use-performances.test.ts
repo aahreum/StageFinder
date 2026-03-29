@@ -61,7 +61,12 @@ describe('getPerformancesQueryOptions', () => {
     // Given
     mockFetch.mockResolvedValue([
       baseRaw,
-      { ...baseRaw, mt20id: 'PF002', prfnm: '오페라의 유령', prfstate: '공연예정' },
+      {
+        ...baseRaw,
+        mt20id: 'PF002',
+        prfnm: '오페라의 유령',
+        prfstate: '공연예정',
+      },
     ]);
     const params = { stdate: '20250101', eddate: '20250630' };
 
