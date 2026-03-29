@@ -45,6 +45,16 @@ export function PerformanceList({ params }: Props) {
     [updateURL],
   );
 
+  const handlePrev = useCallback(
+    () => updateURL({ page: String(page - 1) }),
+    [updateURL, page],
+  );
+
+  const handleNext = useCallback(
+    () => updateURL({ page: String(page + 1) }),
+    [updateURL, page],
+  );
+
   const queryParams = useMemo(
     () => ({ ...params, cpage: page, rows: PAGE_SIZE }),
     [params, page],
@@ -103,8 +113,8 @@ export function PerformanceList({ params }: Props) {
       <Pagination
         page={page}
         hasMore={list.length >= PAGE_SIZE}
-        onPrev={() => updateURL({ page: String(page - 1) })}
-        onNext={() => updateURL({ page: String(page + 1) })}
+        onPrev={handlePrev}
+        onNext={handleNext}
       />
     </div>
   );
