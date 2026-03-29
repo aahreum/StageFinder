@@ -1,9 +1,9 @@
 import type { KopisPerformanceRaw } from "@/shared";
 
-export type PerformanceStatus = "예정" | "공연중" | "완료";
+export type PerformanceStatus = "공연예정" | "공연중" | "완료";
 
 const STATUS_MAP: Record<string, PerformanceStatus> = {
-  예정: "예정",
+  공연예정: "공연예정",
   공연중: "공연중",
   완료: "완료",
 };
@@ -11,8 +11,8 @@ const STATUS_MAP: Record<string, PerformanceStatus> = {
 export interface Performance {
   id: string;
   title: string;
-  startDate: string;      // YYYY.MM.DD
-  endDate: string;        // YYYY.MM.DD
+  startDate: string; // YYYY.MM.DD
+  endDate: string; // YYYY.MM.DD
   venue: string;
   poster: string;
   area: string;
