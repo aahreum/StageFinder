@@ -18,6 +18,7 @@ export default function Home() {
               불러오는 중...
             </div>
           }>
+          {/* Server Component — 요청당 1회 실행. new Date() 기반이라 상수화 불가 */}
           <PerformanceList params={getPerformanceDateParams()} />
         </Suspense>
       </main>
