@@ -1,1 +1,1 @@
-export { GenreFilter } from "./genre-filter";
+export { GenreFilter, getUniqueGenres, filterByGenre } from "./genre-filter";

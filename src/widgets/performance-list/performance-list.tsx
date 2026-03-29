@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { usePerformances } from "@/entities/performance";
-import { PerformanceCard } from "@/entities/performance";
-import { GenreFilter } from "@/features/genre-filter";
+import { usePerformances, PerformanceCard, type Performance } from "@/entities/performance";
+import { GenreFilter, getUniqueGenres, filterByGenre } from "@/features/genre-filter";
 import type { FetchPerformancesParams } from "@/shared";
 
 interface Props {
@@ -14,17 +13,10 @@ export function PerformanceList({ params }: Props) {
   const { data, isPending, error, isError } = usePerformances(params);
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
 
-  // 데이터에서 장르 목록 추출 (중복 제거)
-  const genres = useMemo(
-    () => [...new Set((data ?? []).map((p) => p.genre))].sort(),
-    [data]
-  );
+  const list = useMemo<Performance[]>(() => data ?? [], [data]);
 
-  // 선택된 장르로 필터링
-  const filtered = useMemo(
-    () => (selectedGenre ? (data ?? []).filter((p) => p.genre === selectedGenre) : (data ?? [])),
-    [data, selectedGenre]
-  );
+  const genres = useMemo(() => getUniqueGenres(list.map((p) => p.genre)), [list]);
+  const filtered = useMemo(() => filterByGenre(list, selectedGenre), [list, selectedGenre]);
 
   if (isPending) {
     return (
