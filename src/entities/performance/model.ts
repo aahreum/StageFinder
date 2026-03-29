@@ -21,10 +21,10 @@ export interface Performance {
   status: PerformanceStatus;
 }
 
-/** KopisPerformanceRaw → Performance 변환 */
-export function toPerformance(raw: KopisPerformanceRaw): Performance {
+/** KopisPerformanceRaw → Performance 변환. prfstate가 없거나 알 수 없으면 null 반환 */
+export function toPerformance(raw: KopisPerformanceRaw): Performance | null {
   const status = STATUS_MAP[raw.prfstate];
-  if (!status) throw new Error(`알 수 없는 공연 상태: ${raw.prfstate}`);
+  if (!status) return null;
 
   return {
     id: raw.mt20id,

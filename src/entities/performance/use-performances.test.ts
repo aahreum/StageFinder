@@ -114,13 +114,20 @@ describe('getPerformancesQueryOptions', () => {
     expect(queryKey).toEqual(['performances', params]);
   });
 
-  it('알 수 없는 공연 상태면 에러를 전파해야 한다', async () => {
-    // Given
-    mockFetch.mockResolvedValue([{ ...baseRaw, prfstate: '알수없음' }]);
+  it('알 수 없는 공연 상태면 해당 항목을 제외해야 한다', async () => {
+    // Given: 유효한 공연 + 알 수 없는 상태 공연 혼재
+    mockFetch.mockResolvedValue([
+      baseRaw,
+      { ...baseRaw, mt20id: 'PF002', prfstate: '알수없음' },
+    ]);
     const params = { stdate: '20250101', eddate: '20250630' };
 
-    // When / Then
+    // When
     const { queryFn } = getPerformancesQueryOptions(params);
-    await expect(queryFn()).rejects.toThrow('알 수 없는 공연 상태');
+    const result = await queryFn();
+
+    // Then: 유효한 1개만 반환
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe('PF001');
   });
 });

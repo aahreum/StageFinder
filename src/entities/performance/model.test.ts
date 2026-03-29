@@ -46,7 +46,7 @@ describe('toPerformance', () => {
     const result = toPerformance(raw);
 
     // Then
-    expect(result.isOpenRun).toBe(true);
+    expect(result?.isOpenRun).toBe(true);
   });
 
   it('openrun "N"일 때 isOpenRun이 false여야 한다', () => {
@@ -57,7 +57,7 @@ describe('toPerformance', () => {
     const result = toPerformance(raw);
 
     // Then
-    expect(result.isOpenRun).toBe(false);
+    expect(result?.isOpenRun).toBe(false);
   });
 
   it('prfstate가 그대로 status에 매핑되어야 한다', () => {
@@ -69,15 +69,23 @@ describe('toPerformance', () => {
       const result = toPerformance({ ...baseRaw, prfstate });
 
       // Then
-      expect(result.status).toBe(prfstate);
+      expect(result?.status).toBe(prfstate);
     });
   });
 
-  it('알 수 없는 prfstate일 때 에러를 던져야 한다', () => {
+  it('알 수 없는 prfstate일 때 null을 반환해야 한다', () => {
     // Given
     const raw: KopisPerformanceRaw = { ...baseRaw, prfstate: '알수없음' };
 
     // When / Then
-    expect(() => toPerformance(raw)).toThrow('알 수 없는 공연 상태: 알수없음');
+    expect(toPerformance(raw)).toBeNull();
+  });
+
+  it('prfstate가 undefined일 때 null을 반환해야 한다', () => {
+    // Given
+    const raw = { ...baseRaw, prfstate: undefined as unknown as string };
+
+    // When / Then
+    expect(toPerformance(raw)).toBeNull();
   });
 });

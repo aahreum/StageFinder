@@ -9,7 +9,9 @@ export function getPerformancesQueryOptions(params: FetchPerformancesParams) {
     queryKey: ['performances', params] as const,
     queryFn: async (): Promise<Performance[]> => {
       const raw = await fetchPerformancesClient(params);
-      return raw.map(toPerformance);
+      return raw
+        .map(toPerformance)
+        .filter((p): p is Performance => p !== null);
     },
   };
 }
