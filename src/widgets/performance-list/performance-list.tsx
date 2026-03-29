@@ -1,8 +1,16 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { usePerformances, PerformanceCard, type Performance } from "@/entities/performance";
-import { GenreFilter, getUniqueGenres, filterByGenre } from "@/features/genre-filter";
+import {
+  usePerformances,
+  PerformanceCard,
+  type Performance,
+} from "@/entities/performance";
+import {
+  GenreFilter,
+  getUniqueGenres,
+  filterByGenre,
+} from "@/features/genre-filter";
 import type { FetchPerformancesParams } from "@/shared";
 
 const PAGE_SIZE = 20;
@@ -17,18 +25,26 @@ export function PerformanceList({ params }: Props) {
 
   const queryParams = useMemo(
     () => ({ ...params, cpage: page, rows: PAGE_SIZE }),
-    [params, page]
+    [params, page],
   );
 
   const { data, isPending, error, isError } = usePerformances(queryParams);
 
   const list = useMemo<Performance[]>(() => data ?? [], [data]);
-  const genres = useMemo(() => getUniqueGenres(list.map((p) => p.genre)), [list]);
-  const filtered = useMemo(() => filterByGenre(list, selectedGenre), [list, selectedGenre]);
+  const genres = useMemo(
+    () => getUniqueGenres(list.map((p) => p.genre)),
+    [list],
+  );
+  const filtered = useMemo(
+    () => filterByGenre(list, selectedGenre),
+    [list, selectedGenre],
+  );
 
   if (isPending) {
     return (
-      <div className="flex flex-1 items-center justify-center text-subtle">불러오는 중...</div>
+      <div className="flex flex-1 items-center justify-center text-subtle">
+        불러오는 중...
+      </div>
     );
   }
 
@@ -42,7 +58,11 @@ export function PerformanceList({ params }: Props) {
 
   return (
     <div className="flex flex-1 flex-col">
-      <GenreFilter genres={genres} selected={selectedGenre} onChange={setSelectedGenre} />
+      <GenreFilter
+        genres={genres}
+        selected={selectedGenre}
+        onChange={setSelectedGenre}
+      />
 
       {filtered.length === 0 ? (
         <div className="flex flex-1 items-center justify-center text-subtle">
@@ -62,18 +82,24 @@ export function PerformanceList({ params }: Props) {
       <div className="flex items-center justify-center gap-4 border-t border-border py-4">
         <button
           type="button"
-          onClick={() => { setPage((p) => p - 1); setSelectedGenre(null); }}
+          onClick={() => {
+            setPage((p) => p - 1);
+            setSelectedGenre(null);
+          }}
           disabled={page === 1}
-          className="rounded-lg border border-border px-4 py-2 text-sm disabled:opacity-40 enabled:hover:border-brand enabled:hover:text-brand"
+          className="cursor-pointer disabled:cursor-not-allowed rounded-lg border border-border px-4 py-2 text-sm disabled:opacity-40 enabled:hover:border-brand enabled:hover:text-brand"
         >
           이전
         </button>
         <span className="text-sm text-subtle">{page} 페이지</span>
         <button
           type="button"
-          onClick={() => { setPage((p) => p + 1); setSelectedGenre(null); }}
+          onClick={() => {
+            setPage((p) => p + 1);
+            setSelectedGenre(null);
+          }}
           disabled={list.length < PAGE_SIZE}
-          className="rounded-lg border border-border px-4 py-2 text-sm disabled:opacity-40 enabled:hover:border-brand enabled:hover:text-brand"
+          className="cursor-pointer disabled:cursor-not-allowed rounded-lg border border-border px-4 py-2 text-sm disabled:opacity-40 enabled:hover:border-brand enabled:hover:text-brand"
         >
           다음
         </button>

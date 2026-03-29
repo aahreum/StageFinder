@@ -8,7 +8,7 @@ export function getUniqueGenres(genres: string[]): string[] {
 /** 선택된 장르로 필터링 (null이면 전체 반환) */
 export function filterByGenre<T extends { genre: string }>(
   items: T[],
-  selected: string | null
+  selected: string | null,
 ): T[] {
   return selected ? items.filter((item) => item.genre === selected) : items;
 }
@@ -20,7 +20,7 @@ interface Props {
 }
 
 function btnClass(active: boolean) {
-  return `rounded-full border px-3 py-1 text-sm transition-colors ${
+  return `rounded-full border px-3 py-1 text-sm transition-colors cursor-pointer ${
     active
       ? "border-brand bg-brand text-white"
       : "border-border text-subtle hover:border-brand hover:text-brand"
