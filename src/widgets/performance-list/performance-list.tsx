@@ -97,10 +97,7 @@ export function PerformanceList({ params }: Props) {
       <div className="flex items-center justify-center gap-4 border-t border-border py-4">
         <button
           type="button"
-          onClick={() => {
-            setPage((p) => p - 1);
-            setSelectedGenre(null);
-          }}
+          onClick={() => setPage((p) => p - 1)}
           disabled={page === 1}
           className="cursor-pointer disabled:cursor-not-allowed rounded-lg border border-border px-4 py-2 text-sm disabled:opacity-40 enabled:hover:border-brand enabled:hover:text-brand"
         >
@@ -109,10 +106,7 @@ export function PerformanceList({ params }: Props) {
         <span className="text-sm text-subtle">{page} 페이지</span>
         <button
           type="button"
-          onClick={() => {
-            setPage((p) => p + 1);
-            setSelectedGenre(null);
-          }}
+          onClick={() => setPage((p) => p + 1)}
           disabled={list.length < PAGE_SIZE}
           className="cursor-pointer disabled:cursor-not-allowed rounded-lg border border-border px-4 py-2 text-sm disabled:opacity-40 enabled:hover:border-brand enabled:hover:text-brand"
         >

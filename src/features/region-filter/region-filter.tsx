@@ -1,5 +1,7 @@
 "use client";
 
+import { filterBtnClass } from "@/shared/ui/button-class";
+
 // 지역 코드 → 표시명 매핑 (KOPIS signgucode 기준)
 export const REGION_OPTIONS = [
   { code: "11", label: "서울" },
@@ -26,14 +28,6 @@ interface Props {
   onChange: (code: string | null) => void;
 }
 
-function btnClass(active: boolean) {
-  return `rounded-full border px-3 py-1 text-sm transition-colors cursor-pointer ${
-    active
-      ? "border-brand bg-brand text-white"
-      : "border-border text-subtle hover:border-brand hover:text-brand"
-  }`;
-}
-
 export function RegionFilter({ selected, onChange }: Props) {
   return (
     <div className="flex flex-wrap gap-2 px-4 py-2">
@@ -41,7 +35,7 @@ export function RegionFilter({ selected, onChange }: Props) {
         type="button"
         aria-pressed={selected === null}
         onClick={() => onChange(null)}
-        className={btnClass(selected === null)}
+        className={filterBtnClass(selected === null)}
       >
         전체
       </button>
@@ -52,7 +46,7 @@ export function RegionFilter({ selected, onChange }: Props) {
           type="button"
           aria-pressed={selected === code}
           onClick={() => onChange(code)}
-          className={btnClass(selected === code)}
+          className={filterBtnClass(selected === code)}
         >
           {label}
         </button>
