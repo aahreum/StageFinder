@@ -106,7 +106,7 @@
   - 필터 적용 전/후 데이터 흐름을 docs/filter-data-flow.md로 문서화
   - ✅ 검증: 데이터 흐름 명확하게 문서화
 
-- [ ] implement-region-filter
+- [x] implement-region-filter
   - 지역 필터
   - ✅ 검증: 지역 기준 필터링
 
