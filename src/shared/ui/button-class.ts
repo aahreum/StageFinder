@@ -1,19 +1,17 @@
-import clsx from 'clsx';
-
-/** 활성/비활성 상태에 따른 pill 버튼 className */
-export const pillButtonClass = (active: boolean) =>
-  clsx(
-    'cursor-pointer rounded-full border px-3 py-1 text-sm transition-colors',
+/** 필터 버튼 스타일 (장르/지역 공통) */
+export function filterBtnClass(active: boolean) {
+  return `rounded-full border px-3 py-1 text-sm transition-colors cursor-pointer ${
     active
-      ? 'border-brand bg-brand text-white'
-      : 'border-border text-subtle hover:border-brand hover:text-brand',
-  );
+      ? "border-brand bg-brand text-white"
+      : "border-border text-subtle hover:border-brand hover:text-brand"
+  }`;
+}
 
-/** 활성/비활성 상태에 따른 사각형 버튼 className */
-export const squareButtonClass = (disabled: boolean) =>
-  clsx(
-    'rounded-lg border px-4 py-2 text-sm transition-colors',
+/** 페이지네이션 버튼 스타일 */
+export function squareButtonClass(disabled: boolean) {
+  return `rounded-lg border px-4 py-2 text-sm transition-colors ${
     disabled
-      ? 'cursor-not-allowed border-border opacity-40'
-      : 'cursor-pointer border-border hover:border-brand hover:text-brand',
-  );
+      ? "cursor-not-allowed border-border opacity-40"
+      : "cursor-pointer border-border hover:border-brand hover:text-brand"
+  }`;
+}

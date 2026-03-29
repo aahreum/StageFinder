@@ -61,12 +61,7 @@ describe('getPerformancesQueryOptions', () => {
     // Given
     mockFetch.mockResolvedValue([
       baseRaw,
-      {
-        ...baseRaw,
-        mt20id: 'PF002',
-        prfnm: '오페라의 유령',
-        prfstate: '공연예정',
-      },
+      { ...baseRaw, mt20id: "PF002", prfnm: "오페라의 유령", prfstate: "공연예정" },
     ]);
     const params = { stdate: '20250101', eddate: '20250630' };
 
@@ -76,8 +71,8 @@ describe('getPerformancesQueryOptions', () => {
 
     // Then
     expect(result).toHaveLength(2);
-    expect(result[1].title).toBe('오페라의 유령');
-    expect(result[1].status).toBe('공연예정');
+    expect(result[1].title).toBe("오페라의 유령");
+    expect(result[1].status).toBe("공연예정");
   });
 
   it('빈 배열이면 빈 배열을 반환해야 한다', async () => {

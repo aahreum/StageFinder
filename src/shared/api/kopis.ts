@@ -1,7 +1,8 @@
 import { XMLParser } from 'fast-xml-parser';
 
-const BASE_URL = 'https://kopis.or.kr/openApi/restful/pblprfr';
-const parser = new XMLParser();
+const BASE_URL = "https://kopis.or.kr/openApi/restful/pblprfr";
+// parseTagValue: false — 숫자/불리언 자동 변환 방지 (prfstate 등 문자열 필드 보호)
+const parser = new XMLParser({ parseTagValue: false });
 
 const DATE_REGEX = /^\d{8}$/;
 
@@ -70,5 +71,7 @@ export async function fetchPerformances(
   if (!db) return [];
 
   // 단일 결과는 객체, 복수 결과는 배열로 반환됨
-  return Array.isArray(db) ? db : [db];
+  const items = Array.isArray(db) ? db : [db];
+  // prfstate 없는 항목 제외 (KOPIS 응답에서 간헐적으로 누락되는 경우 방어)
+  return items.filter((item) => item.prfstate);
 }

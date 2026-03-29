@@ -1,1 +1,1 @@
-export { RegionFilter, getUniqueAreas, filterByArea } from './region-filter';
+export { RegionFilter, REGION_OPTIONS } from "./region-filter";

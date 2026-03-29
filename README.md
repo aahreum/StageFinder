@@ -26,23 +26,22 @@
 
 ## 🤖 Agentic Coding
 
-이 프로젝트는 단순한 기능 구현을 넘어
-**AI 에이전트 기반 개발 방식(Agentic Coding)**을 실험하기 위해 만들어졌습니다.
+이 프로젝트는 AI 에이전트 기반 개발(Agentic Coding)을 실험하기 위해 설계되었습니다.
 
-- Self-Tasking: todo.md를 분석하여 우선순위에 따라 작업을 스스로 선택합니다.
-- Implementation: 선택한 작업에 최적화된 코드를 고민하고 구현합니다.
-- Git Workflow: 기능 구현 후 브랜치 생성(branch), 커밋(commit), PR(gh pr create)까지의 협업 과정을 자동화합니다.
-- Iterative Refinement: 구현된 코드를 스스로 검토하고 지속적인 개선안을 제시합니다.
+- Self-Tasking: todo.md를 분석해 우선순위에 따라 작업을 스스로 선택
+- Implementation: 선택한 작업에 최적화된 코드를 작성
+- Git Workflow: 브랜치 생성, 커밋, PR까지 자동화
+- Iterative Refinement: 구현한 코드를 검토하고 개선안 제시
 
 ---
 
-## 🧪 Harness Coding (검증 기반 개발)
+## 🧪 Harness Coding (검증 중심 개발)
 
-신뢰할 수 있는 결과물을 위해 Harness Coding(검증 기반 개발) 방식을 엄격히 적용합니다. 모든 기능은 '구현'보다 '검증'에 무게를 둡니다.
+신뢰할 수 있는 결과물을 위해 검증 중심 개발(Harness Coding) 방식을 적용했습니다.
 
-- Pre-definition: 코드를 작성하기 전, 반드시 기대 동작과 성공 기준(Success Criteria)을 먼저 정의합니다.
-- Compliance: 정의된 검증 조건을 완벽히 충족하는 방향으로 기능을 구현합니다.
-- Verification & Loop: 구현 직후 실제 동작을 검증하고, 기대치에 미치지 못할 경우 즉시 개선 루프를 실행합니다.
+- Pre-definition: 기능 구현 전 기대 동작과 성공 기준 정의
+- Compliance: 정의된 검증 조건을 충족하도록 기능 구현
+- Verification & Loop: 구현 직후 동작 검증, 미충족 시 즉시 개선
 
 ---
 

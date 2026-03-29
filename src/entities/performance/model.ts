@@ -1,11 +1,11 @@
 import type { KopisPerformanceRaw } from '@/shared';
 
-export type PerformanceStatus = '공연예정' | '공연중' | '완료';
+export type PerformanceStatus = "공연예정" | "공연중" | "공연완료";
 
 const STATUS_MAP: Record<string, PerformanceStatus> = {
-  공연예정: '공연예정',
-  공연중: '공연중',
-  완료: '완료',
+  공연예정: "공연예정",
+  공연중: "공연중",
+  공연완료: "공연완료",
 };
 
 export interface Performance {

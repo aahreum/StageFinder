@@ -62,7 +62,7 @@ describe('toPerformance', () => {
 
   it('prfstate가 그대로 status에 매핑되어야 한다', () => {
     // Given
-    const statuses = ['공연예정', '공연중', '완료'] as const;
+    const statuses = ["공연예정", "공연중", "공연완료"] as const;
 
     statuses.forEach((prfstate) => {
       // When

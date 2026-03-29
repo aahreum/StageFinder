@@ -20,17 +20,13 @@ vi.mock('@/shared', () => ({
   supabase: {},
   fetchPerformances: vi.fn(),
 }));
-vi.mock('@/widgets/filter-bar', () => ({ FilterBar: vi.fn() }));
-vi.mock('@/widgets/pagination', () => ({ Pagination: vi.fn() }));
 vi.mock('@/features/genre-filter', () => ({
   getUniqueGenres: vi.fn(),
   filterByGenre: vi.fn(),
+  GenreFilter: vi.fn(),
 }));
-// URL 기반 상태 관리 훅 모킹
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: vi.fn() }),
-  usePathname: () => '/',
-  useSearchParams: () => new URLSearchParams(),
+vi.mock('@/features/region-filter', () => ({
+  RegionFilter: vi.fn(),
 }));
 
 import { PerformanceList } from './performance-list';
