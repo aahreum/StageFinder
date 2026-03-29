@@ -33,7 +33,7 @@
   - 공연 타입 정의
   - ✅ 검증: 타입 에러 없음
 
-- [ ] create-usePerformances-hook
+- [x] create-usePerformances-hook
   - TanStack Query 기반 hook 구현
   - ✅ 검증: data / loading / error 정상 동작
 
