@@ -30,7 +30,8 @@ export function PerformanceList({ params }: Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const page = Number(searchParams.get('page') ?? '1');
+  const pageRaw = Number(searchParams.get('page') ?? '1');
+  const page = Number.isFinite(pageRaw) && pageRaw >= 1 ? Math.floor(pageRaw) : 1;
   // URL slug → KOPIS genrenm 변환
   const genreSlug = searchParams.get('genre');
   const selectedGenre = genreSlug ? slugToGenre(genreSlug) : null;

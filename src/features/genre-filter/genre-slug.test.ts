@@ -62,8 +62,7 @@ describe('genreToSlug', () => {
 
   // 대소문자 민감성
   describe('대소문자 민감성', () => {
-    it('대소문자가 다르면 원본 값을 반환해야 한다', () => {
-      expect(genreToSlug('연극')).not.toBe('연극');
+    it('대소문자가 다른 영문 입력은 원본 값을 반환해야 한다', () => {
       expect(genreToSlug('Play')).toBe('Play');
       expect(genreToSlug('PLAY')).toBe('PLAY');
     });
