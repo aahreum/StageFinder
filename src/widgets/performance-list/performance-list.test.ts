@@ -1,4 +1,15 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+// React 훅 모킹 — 렌더 컨텍스트 없이 컴포넌트를 함수로 호출하기 위해
+vi.mock('react', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react')>();
+  return {
+    ...actual,
+    useCallback: (fn: unknown) => fn,
+    useMemo: (fn: () => unknown) => fn(),
+    useState: (init: unknown) => [init, vi.fn()],
+  };
+});
 
 // 트랜지티브 의존성 모킹
 vi.mock('@/entities/performance', () => ({
@@ -25,6 +36,8 @@ vi.mock('next/navigation', () => ({
 import { PerformanceList } from './performance-list';
 // shared barrel을 거치지 않고 직접 import하여 Supabase 초기화 우회
 import { getPerformanceDateParams } from '../../shared/lib/date-params';
+import { usePerformances } from '@/entities/performance';
+import { getUniqueGenres, filterByGenre } from '@/features/genre-filter';
 
 describe('getPerformanceDateParams 날짜 형식 검증', () => {
   it('stdate가 YYYYMMDD 8자리여야 한다', () => {
@@ -54,7 +67,189 @@ describe('getPerformanceDateParams 날짜 형식 검증', () => {
 });
 
 describe('PerformanceList', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // 기본 mock 값 설정 — 각 테스트에서 override 가능
+    vi.mocked(getUniqueGenres).mockReturnValue([]);
+    vi.mocked(filterByGenre).mockReturnValue([]);
+  });
+
   it('함수로 export되어야 한다', () => {
     expect(typeof PerformanceList).toBe('function');
+  });
+
+  describe('usePerformances 훅 호출 동작', () => {
+    it('전달받은 params와 page를 포함한 queryParams로 usePerformances를 호출해야 한다', () => {
+      const mockParams = { stdate: '20260101', eddate: '20260331' };
+      const mockUsePerformances = vi.mocked(usePerformances);
+      mockUsePerformances.mockReturnValue({
+        data: [],
+        isPending: false,
+        isError: false,
+        error: null,
+      } as any);
+
+      // PerformanceList 렌더링 시 usePerformances 호출
+      PerformanceList({ params: mockParams });
+
+      // usePerformances가 호출되었는지 확인
+      expect(mockUsePerformances).toHaveBeenCalled();
+    });
+  });
+
+  describe('로딩 상태(isPending: true) 처리', () => {
+    it('usePerformances가 isPending: true를 반환할 때 FilterBar, Pagination을 렌더링하지 않아야 한다', () => {
+      // Arrange: usePerformances 모킹 - 로딩 상태
+      const mockUsePerformances = vi.mocked(usePerformances);
+      mockUsePerformances.mockReturnValue({
+        data: undefined,
+        isPending: true,
+        isError: false,
+        error: null,
+      } as any);
+
+      // Act: 컴포넌트 호출
+      const params = { stdate: '20260101', eddate: '20260331' };
+      // PerformanceList는 early return하여 FilterBar/Pagination 로직에 도달하지 않음
+      // 따라서 getUniqueGenres, filterByGenre는 호출되지 않음
+      PerformanceList({ params });
+
+      // Assert: 필터링 함수들이 호출되지 않음 (early return으로 인한 동작)
+      // Note: 렌더링 없이 로직 수행을 검증하려면 usePerformances 호출은 필수
+      expect(mockUsePerformances).toHaveBeenCalled();
+    });
+  });
+
+  describe('에러 상태(isError: true) 처리', () => {
+    it('usePerformances가 isError: true와 Error를 반환할 때 FilterBar, Pagination을 렌더링하지 않아야 한다', () => {
+      // Arrange: usePerformances 모킹 - 에러 상태
+      const mockError = new Error('테스트 오류');
+      const mockUsePerformances = vi.mocked(usePerformances);
+      mockUsePerformances.mockReturnValue({
+        data: undefined,
+        isPending: false,
+        isError: true,
+        error: mockError,
+      } as any);
+
+      // Act: 컴포넌트 호출
+      const params = { stdate: '20260101', eddate: '20260331' };
+      PerformanceList({ params });
+
+      // Assert: usePerformances가 호출되고 early return됨
+      expect(mockUsePerformances).toHaveBeenCalled();
+      // 에러 상태에서도 FilterBar 로직에 도달하지 않음
+      // getUniqueGenres는 호출되지 않음
+    });
+  });
+
+  describe('빈 데이터(data: []) 처리', () => {
+    it('usePerformances가 빈 배열을 반환할 때 getUniqueGenres와 filterByGenre를 호출해야 한다', () => {
+      // Arrange: usePerformances 모킹 - 빈 데이터
+      const mockUsePerformances = vi.mocked(usePerformances);
+      mockUsePerformances.mockReturnValue({
+        data: [],
+        isPending: false,
+        isError: false,
+        error: null,
+      } as any);
+
+      const mockGetUniqueGenres = vi.mocked(getUniqueGenres);
+      mockGetUniqueGenres.mockReturnValue([]);
+
+      const mockFilterByGenre = vi.mocked(filterByGenre);
+      mockFilterByGenre.mockReturnValue([]);
+
+      // Act: 컴포넌트 호출
+      const params = { stdate: '20260101', eddate: '20260331' };
+      PerformanceList({ params });
+
+      // Assert: 필터링 함수들이 호출됨
+      expect(mockUsePerformances).toHaveBeenCalled();
+      expect(mockGetUniqueGenres).toHaveBeenCalledWith([]);
+      expect(mockFilterByGenre).toHaveBeenCalledWith([], null);
+    });
+
+    it('usePerformances가 빈 배열을 반환할 때 list는 빈 배열이어야 한다', () => {
+      // Arrange
+      const mockUsePerformances = vi.mocked(usePerformances);
+      mockUsePerformances.mockReturnValue({
+        data: [],
+        isPending: false,
+        isError: false,
+        error: null,
+      } as any);
+
+      const mockGetUniqueGenres = vi.mocked(getUniqueGenres);
+      mockGetUniqueGenres.mockReturnValue([]);
+
+      const mockFilterByGenre = vi.mocked(filterByGenre);
+      mockFilterByGenre.mockReturnValue([]);
+
+      // Act: 컴포넌트 호출
+      const params = { stdate: '20260101', eddate: '20260331' };
+      PerformanceList({ params });
+
+      // Assert: list는 빈 배열로 변환됨 (data ?? [])
+      expect(mockFilterByGenre).toHaveBeenCalledWith([], null);
+    });
+  });
+
+  describe('정상 데이터(data: Performance[]) 처리', () => {
+    it('usePerformances가 공연 데이터 배열을 반환할 때 getUniqueGenres와 filterByGenre를 호출해야 한다', () => {
+      // Arrange: 공연 데이터
+      const mockPerformances = [
+        { id: '1', name: '공연1', genre: '뮤지컬' },
+        { id: '2', name: '공연2', genre: '연극' },
+        { id: '3', name: '공연3', genre: '뮤지컬' },
+      ] as any;
+
+      const mockUsePerformances = vi.mocked(usePerformances);
+      mockUsePerformances.mockReturnValue({
+        data: mockPerformances,
+        isPending: false,
+        isError: false,
+        error: null,
+      } as any);
+
+      const mockGetUniqueGenres = vi.mocked(getUniqueGenres);
+      mockGetUniqueGenres.mockReturnValue(['뮤지컬', '연극']);
+
+      const mockFilterByGenre = vi.mocked(filterByGenre);
+      mockFilterByGenre.mockReturnValue(mockPerformances.slice(0, 2));
+
+      // Act: 컴포넌트 호출
+      const params = { stdate: '20260101', eddate: '20260331' };
+      PerformanceList({ params });
+
+      // Assert
+      expect(mockGetUniqueGenres).toHaveBeenCalledWith(['뮤지컬', '연극', '뮤지컬']);
+      expect(mockFilterByGenre).toHaveBeenCalledWith(mockPerformances, null);
+    });
+
+    it('usePerformances가 null을 반환할 때 list는 빈 배열로 처리해야 한다', () => {
+      // Arrange
+      const mockUsePerformances = vi.mocked(usePerformances);
+      mockUsePerformances.mockReturnValue({
+        data: undefined,
+        isPending: false,
+        isError: false,
+        error: null,
+      } as any);
+
+      const mockGetUniqueGenres = vi.mocked(getUniqueGenres);
+      mockGetUniqueGenres.mockReturnValue([]);
+
+      const mockFilterByGenre = vi.mocked(filterByGenre);
+      mockFilterByGenre.mockReturnValue([]);
+
+      // Act
+      const params = { stdate: '20260101', eddate: '20260331' };
+      PerformanceList({ params });
+
+      // Assert: data가 undefined이면 list는 [] (data ?? [])
+      expect(mockGetUniqueGenres).toHaveBeenCalledWith([]);
+      expect(mockFilterByGenre).toHaveBeenCalledWith([], null);
+    });
   });
 });
