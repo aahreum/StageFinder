@@ -9,5 +9,6 @@ export function getPerformanceDateParams(monthsAhead = 3): FetchPerformancesPara
   const fmt = (d: Date) =>
     `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
 
-  return { stdate: fmt(today), eddate: fmt(end), prfstate: "02" };
+  // prfstate 미지정 → 예정(01) + 공연중(02) 모두 포함
+  return { stdate: fmt(today), eddate: fmt(end) };
 }

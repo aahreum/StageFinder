@@ -28,8 +28,8 @@ describe("getPerformanceDateParams 날짜 형식 검증", () => {
     expect(parseInt(eddate)).toBeGreaterThan(parseInt(stdate));
   });
 
-  it("prfstate가 '02'(공연중)여야 한다", () => {
-    expect(getPerformanceDateParams().prfstate).toBe("02");
+  it("prfstate가 미지정이어야 한다 (예정+공연중 모두 포함)", () => {
+    expect(getPerformanceDateParams().prfstate).toBeUndefined();
   });
 
   it("eddate가 stdate 기준 3개월 후여야 한다", () => {
