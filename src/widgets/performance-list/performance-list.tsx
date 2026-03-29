@@ -67,6 +67,9 @@ export function PerformanceList({ params }: Props) {
     () => getUniqueGenres(list.map((p) => p.genre)),
     [list],
   );
+  // NOTE: 클라이언트 필터링 — 현재 페이지(20개) 내에서만 동작함
+  // 다른 페이지에 같은 장르의 데이터가 있어도 표시되지 않음
+  // TODO: 서버 사이드 필터링(KOPIS genrenm 파라미터)으로 개선 필요
   const filtered = useMemo(
     () => filterByGenre(list, selectedGenre),
     [list, selectedGenre],
