@@ -55,14 +55,17 @@ export function PerformanceList({ params }: Props) {
     [updateURL, page],
   );
 
+  // PAGE_SIZE + 1개 요청으로 다음 페이지 존재 여부 확인
   const queryParams = useMemo(
-    () => ({ ...params, cpage: page, rows: PAGE_SIZE }),
+    () => ({ ...params, cpage: page, rows: PAGE_SIZE + 1 }),
     [params, page],
   );
 
   const { data, isPending, error, isError } = usePerformances(queryParams);
 
-  const list = useMemo<Performance[]>(() => data ?? [], [data]);
+  const rawList = useMemo<Performance[]>(() => data ?? [], [data]);
+  const hasMore = rawList.length > PAGE_SIZE;
+  const list = useMemo<Performance[]>(() => rawList.slice(0, PAGE_SIZE), [rawList]);
   const genres = useMemo(
     () => getUniqueGenres(list.map((p) => p.genre)),
     [list],
@@ -115,7 +118,7 @@ export function PerformanceList({ params }: Props) {
 
       <Pagination
         page={page}
-        hasMore={list.length >= PAGE_SIZE}
+        hasMore={hasMore}
         onPrev={handlePrev}
         onNext={handleNext}
       />
