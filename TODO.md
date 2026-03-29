@@ -37,7 +37,7 @@
   - TanStack Query 기반 hook 구현
   - ✅ 검증: data / loading / error 정상 동작
 
-- [ ] create-performance-card-ui
+- [x] create-performance-card-ui
   - 공연 카드 컴포넌트 구현
   - ✅ 검증: props 기반 렌더링 정상
 
