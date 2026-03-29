@@ -45,7 +45,7 @@ export function PerformanceCard({ performance }: Props) {
   return (
     <article
       onClick={handleClick}
-      className={`flex gap-3 rounded-xl border border-border bg-background p-3 transition-opacity ${loading ? 'opacity-60' : 'cursor-pointer hover:border-brand'}`}
+      className={`flex gap-3 rounded-xl border border-border bg-background p-3 transition-opacity ${loading ? 'cursor-wait opacity-60' : 'cursor-pointer hover:border-brand'}`}
     >
       {/* 포스터 */}
       <div className='relative h-[120px] w-[80px] shrink-0 overflow-hidden rounded-lg bg-border'>

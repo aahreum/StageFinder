@@ -44,7 +44,14 @@ export async function fetchPerformanceDetail(id: string): Promise<KopisRelate[]>
   if (!res.ok) throw new Error(`KOPIS API 오류: ${res.status}`);
 
   const xml = await res.text();
-  const parsed = parser.parse(xml);
+
+  let parsed: ReturnType<typeof parser.parse>;
+  try {
+    parsed = parser.parse(xml);
+  } catch {
+    throw new Error('KOPIS API 상세 응답 파싱 실패');
+  }
+
   const db = parsed?.dbs?.db;
   if (!db) return [];
 
