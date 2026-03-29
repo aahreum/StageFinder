@@ -49,7 +49,7 @@
 
 ## Phase 3: 필터
 
-- [ ] implement-genre-filter
+- [x] implement-genre-filter
   - 장르 필터 UI + 로직
   - ✅ 검증: 선택한 장르만 표시
 
