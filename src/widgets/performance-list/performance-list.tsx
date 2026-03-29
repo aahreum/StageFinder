@@ -8,9 +8,12 @@ import {
 } from "@/entities/performance";
 import {
   GenreFilter,
-  getUniqueGenres,
   filterByGenre,
+  GENRE_TO_SLUG,
 } from "@/features/genre-filter";
+
+// region이 바뀌어도 항상 고정 표시할 장르 목록
+const FIXED_GENRES = Object.keys(GENRE_TO_SLUG);
 import { RegionFilter } from "@/features/region-filter";
 import type { FetchPerformancesParams } from "@/shared";
 
@@ -38,10 +41,6 @@ export function PerformanceList({ params }: Props) {
   const { data, isPending, error, isError } = usePerformances(queryParams);
 
   const list = useMemo<Performance[]>(() => data ?? [], [data]);
-  const genres = useMemo(
-    () => getUniqueGenres(list.map((p) => p.genre)),
-    [list],
-  );
   const filtered = useMemo(
     () => filterByGenre(list, selectedGenre),
     [list, selectedGenre],
@@ -70,11 +69,10 @@ export function PerformanceList({ params }: Props) {
         onChange={(code) => {
           setSelectedRegion(code);
           setPage(1);
-          setSelectedGenre(null);
         }}
       />
       <GenreFilter
-        genres={genres}
+        genres={FIXED_GENRES}
         selected={selectedGenre}
         onChange={setSelectedGenre}
       />
