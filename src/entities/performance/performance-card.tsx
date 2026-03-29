@@ -1,8 +1,8 @@
 import Image from "next/image";
 import type { Performance } from "./model";
 
-// 공연 상태별 배지 색상
-const STATUS_COLOR: Record<Performance["status"], string> = {
+// 공연 상태별 배지 색상 (테스트에서 import 가능하도록 export)
+export const STATUS_COLOR: Record<Performance["status"], string> = {
   예정: "bg-warning/10 text-warning",
   공연중: "bg-success/10 text-success",
   완료: "bg-subtle/10 text-subtle",
