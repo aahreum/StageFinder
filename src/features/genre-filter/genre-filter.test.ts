@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 // 테스트 파일 내 재구현 대신 실제 export 함수를 import
-import { GenreFilter, getUniqueGenres, filterByGenre } from './genre-filter';
+import { GenreFilter } from './genre-filter';
+import { getUniqueGenres, filterByGenre } from './genre-filter.utils';
 
 describe('getUniqueGenres', () => {
   it('중복 없는 배열은 정렬된 배열을 반환해야 한다', () => {
