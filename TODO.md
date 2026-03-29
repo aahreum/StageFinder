@@ -59,9 +59,10 @@
   - 메인 화면 안내문구 추가 (오늘 기준 3개월치)
   - ✅ 검증: 페이지 전환 시 다음 20개 로드, 두 상태 모두 표시
 
-- [ ] implement-region-filter
-  - 지역 필터
-  - ✅ 검증: 지역 기준 필터링
+- [x] implement-region-filter
+  - 지역 필터 (서버사이드 signgucode)
+  - STATUS_MAP "완료" → "공연완료" 버그 수정
+  - ✅ 검증: 지역 선택 시 KOPIS에 signgucode 전달, 전체 선택 시 전체 표시
 
 - [ ] implement-date-filter
   - 날짜 필터

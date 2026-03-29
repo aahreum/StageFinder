@@ -11,6 +11,7 @@ import {
   getUniqueGenres,
   filterByGenre,
 } from "@/features/genre-filter";
+import { RegionFilter } from "@/features/region-filter";
 import type { FetchPerformancesParams } from "@/shared";
 
 const PAGE_SIZE = 20;
@@ -22,10 +23,16 @@ interface Props {
 export function PerformanceList({ params }: Props) {
   const [page, setPage] = useState(1);
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
+  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
 
   const queryParams = useMemo(
-    () => ({ ...params, cpage: page, rows: PAGE_SIZE }),
-    [params, page],
+    () => ({
+      ...params,
+      cpage: page,
+      rows: PAGE_SIZE,
+      ...(selectedRegion && { signgucode: selectedRegion }),
+    }),
+    [params, page, selectedRegion],
   );
 
   const { data, isPending, error, isError } = usePerformances(queryParams);
@@ -58,6 +65,14 @@ export function PerformanceList({ params }: Props) {
 
   return (
     <div className="flex flex-1 flex-col">
+      <RegionFilter
+        selected={selectedRegion}
+        onChange={(code) => {
+          setSelectedRegion(code);
+          setPage(1);
+          setSelectedGenre(null);
+        }}
+      />
       <GenreFilter
         genres={genres}
         selected={selectedGenre}
