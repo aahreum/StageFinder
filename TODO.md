@@ -41,7 +41,7 @@
   - 공연 카드 컴포넌트 구현
   - ✅ 검증: props 기반 렌더링 정상
 
-- [ ] render-performance-list-page
+- [x] render-performance-list-page
   - 리스트 페이지 구현
   - ✅ 검증: API 데이터 화면 렌더링
 

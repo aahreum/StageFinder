@@ -3,12 +3,13 @@ import type { KopisPerformanceRaw } from "@/shared";
 import type { Performance } from "./model";
 
 // vi.hoisted로 변수를 호이스팅하여 vi.mock factory에서 참조 가능하게 함
-const { mockFetchPerformances } = vi.hoisted(() => ({
-  mockFetchPerformances: vi.fn(),
+const { mockFetch } = vi.hoisted(() => ({
+  mockFetch: vi.fn(),
 }));
 
-vi.mock("@/shared", () => ({
-  fetchPerformances: mockFetchPerformances,
+// 클라이언트 fetch 함수 mock (API Route 프록시)
+vi.mock("@/shared/api/performances-client", () => ({
+  fetchPerformancesClient: mockFetch,
 }));
 
 import { getPerformancesQueryOptions } from "./use-performances";
@@ -28,12 +29,12 @@ const baseRaw: KopisPerformanceRaw = {
 
 describe("getPerformancesQueryOptions", () => {
   beforeEach(() => {
-    mockFetchPerformances.mockClear();
+    mockFetch.mockClear();
   });
 
   it("fetchPerformances 결과를 toPerformance로 변환해야 한다", async () => {
     // Given
-    mockFetchPerformances.mockResolvedValue([baseRaw]);
+    mockFetch.mockResolvedValue([baseRaw]);
     const params = { stdate: "20250101", eddate: "20250630" };
 
     // When
@@ -58,7 +59,7 @@ describe("getPerformancesQueryOptions", () => {
 
   it("여러 개의 공연을 모두 변환해야 한다", async () => {
     // Given
-    mockFetchPerformances.mockResolvedValue([
+    mockFetch.mockResolvedValue([
       baseRaw,
       { ...baseRaw, mt20id: "PF002", prfnm: "오페라의 유령", prfstate: "예정" },
     ]);
@@ -76,7 +77,7 @@ describe("getPerformancesQueryOptions", () => {
 
   it("빈 배열이면 빈 배열을 반환해야 한다", async () => {
     // Given
-    mockFetchPerformances.mockResolvedValue([]);
+    mockFetch.mockResolvedValue([]);
     const params = { stdate: "20250101", eddate: "20250630" };
 
     // When
@@ -89,7 +90,7 @@ describe("getPerformancesQueryOptions", () => {
 
   it("fetchPerformances 에러를 전파해야 한다", async () => {
     // Given
-    mockFetchPerformances.mockRejectedValue(new Error("KOPIS API 오류"));
+    mockFetch.mockRejectedValue(new Error("KOPIS API 오류"));
     const params = { stdate: "20250101", eddate: "20250630" };
 
     // When / Then
@@ -110,7 +111,7 @@ describe("getPerformancesQueryOptions", () => {
 
   it("알 수 없는 공연 상태면 에러를 전파해야 한다", async () => {
     // Given
-    mockFetchPerformances.mockResolvedValue([{ ...baseRaw, prfstate: "알수없음" }]);
+    mockFetch.mockResolvedValue([{ ...baseRaw, prfstate: "알수없음" }]);
     const params = { stdate: "20250101", eddate: "20250630" };
 
     // When / Then
