@@ -114,8 +114,8 @@ describe('getPerformancesQueryOptions', () => {
     expect(queryKey).toEqual(['performances', params]);
   });
 
-  it('알 수 없는 공연 상태면 해당 항목을 제외해야 한다', async () => {
-    // Given: 유효한 공연 + 알 수 없는 상태 공연 혼재
+  it('알 수 없는 공연 상태면 공연중 fallback으로 포함해야 한다', async () => {
+    // Given
     mockFetch.mockResolvedValue([
       baseRaw,
       { ...baseRaw, mt20id: 'PF002', prfstate: '알수없음' },
@@ -126,8 +126,8 @@ describe('getPerformancesQueryOptions', () => {
     const { queryFn } = getPerformancesQueryOptions(params);
     const result = await queryFn();
 
-    // Then: 유효한 1개만 반환
-    expect(result).toHaveLength(1);
-    expect(result[0].id).toBe('PF001');
+    // Then: 두 항목 모두 포함, 두 번째는 fallback '공연중'
+    expect(result).toHaveLength(2);
+    expect(result[1].status).toBe('공연중');
   });
 });

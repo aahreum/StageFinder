@@ -17,7 +17,6 @@ import {
   getUniqueAreas,
   filterByArea,
 } from '@/features/region-filter';
-import { filterByDate } from '@/features/date-filter';
 import { FilterBar } from '@/widgets/filter-bar';
 import { Pagination } from '@/widgets/pagination';
 import type { FetchPerformancesParams } from '@/shared';
@@ -42,8 +41,6 @@ export function PerformanceList({ params }: Props) {
   const selectedGenre = genreSlug ? slugToGenre(genreSlug) : null;
   // 지역명(한글)을 URL에 그대로 저장 — 브라우저가 자동 인코딩/디코딩 처리
   const selectedArea = searchParams.get('region');
-  const dateFrom = searchParams.get('dateFrom');
-  const dateTo = searchParams.get('dateTo');
 
   // URL 파라미터 일괄 업데이트
   const updateURL = useCallback(
@@ -68,13 +65,6 @@ export function PerformanceList({ params }: Props) {
   // 지역 변경: URL에 직접 저장, page 초기화
   const handleAreaChange = useCallback(
     (area: string | null) => updateURL({ region: area, page: null }),
-    [updateURL],
-  );
-
-  // 날짜 변경: YYYY-MM-DD 형식으로 URL 저장, page 초기화
-  const handleDateChange = useCallback(
-    (from: string | null, to: string | null) =>
-      updateURL({ dateFrom: from, dateTo: to, page: null }),
     [updateURL],
   );
 
@@ -111,13 +101,8 @@ export function PerformanceList({ params }: Props) {
   // NOTE: 클라이언트 필터링 — FETCH_ROWS(200개) 내에서 동작
   // TODO: 서버 사이드 필터링(KOPIS shgenrenm 파라미터)으로 개선 필요
   const filtered = useMemo(
-    () =>
-      filterByDate(
-        filterByArea(filterByGenre(list, selectedGenre), selectedArea),
-        dateFrom,
-        dateTo,
-      ),
-    [list, selectedGenre, selectedArea, dateFrom, dateTo],
+    () => filterByArea(filterByGenre(list, selectedGenre), selectedArea),
+    [list, selectedGenre, selectedArea],
   );
 
   // 전체 필터 결과 기준으로 페이지네이션
@@ -153,9 +138,6 @@ export function PerformanceList({ params }: Props) {
         areas={areas}
         selectedArea={selectedArea}
         onAreaChange={handleAreaChange}
-        dateFrom={dateFrom}
-        dateTo={dateTo}
-        onDateChange={handleDateChange}
       />
 
       {paginatedList.length === 0 ? (

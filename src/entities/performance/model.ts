@@ -2,11 +2,15 @@ import type { KopisPerformanceRaw } from '@/shared';
 
 export type PerformanceStatus = '공연예정' | '공연중' | '공연완료';
 
-// KOPIS 응답의 prfstate 실제 반환값 기준 매핑
+// KOPIS 응답의 prfstate 값 매핑 (한글 / 숫자 코드 모두 대응)
 const STATUS_MAP: Record<string, PerformanceStatus> = {
   공연예정: '공연예정',
+  '01': '공연예정',
   공연중: '공연중',
-  공연완료: '공연완료', // KOPIS 실제 응답값
+  '02': '공연중',
+  공연완료: '공연완료',
+  완료: '공연완료',
+  '03': '공연완료',
 };
 
 export interface Performance {
@@ -22,10 +26,10 @@ export interface Performance {
   status: PerformanceStatus;
 }
 
-/** KopisPerformanceRaw → Performance 변환. prfstate가 없거나 알 수 없으면 null 반환 */
-export function toPerformance(raw: KopisPerformanceRaw): Performance | null {
-  const status = STATUS_MAP[raw.prfstate];
-  if (!status) return null;
+/** KopisPerformanceRaw → Performance 변환. prfstate 미매핑 시 '공연중' fallback */
+export function toPerformance(raw: KopisPerformanceRaw): Performance {
+  const status: PerformanceStatus =
+    STATUS_MAP[raw.prfstate] ?? '공연중';
 
   return {
     id: raw.mt20id,

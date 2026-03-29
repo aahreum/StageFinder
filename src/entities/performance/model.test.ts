@@ -73,19 +73,19 @@ describe('toPerformance', () => {
     });
   });
 
-  it('알 수 없는 prfstate일 때 null을 반환해야 한다', () => {
+  it('알 수 없는 prfstate일 때 공연중 fallback을 사용해야 한다', () => {
     // Given
     const raw: KopisPerformanceRaw = { ...baseRaw, prfstate: '알수없음' };
 
     // When / Then
-    expect(toPerformance(raw)).toBeNull();
+    expect(toPerformance(raw).status).toBe('공연중');
   });
 
-  it('prfstate가 undefined일 때 null을 반환해야 한다', () => {
+  it('prfstate가 undefined일 때 공연중 fallback을 사용해야 한다', () => {
     // Given
     const raw = { ...baseRaw, prfstate: undefined as unknown as string };
 
     // When / Then
-    expect(toPerformance(raw)).toBeNull();
+    expect(toPerformance(raw).status).toBe('공연중');
   });
 });
