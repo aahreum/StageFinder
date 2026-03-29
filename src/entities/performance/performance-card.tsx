@@ -44,8 +44,13 @@ export function PerformanceCard({ performance }: Props) {
 
   return (
     <article
+      role="button"
+      tabIndex={0}
+      aria-label={`${title} 예매처 보기`}
+      aria-busy={loading}
       onClick={handleClick}
-      className={`flex gap-3 rounded-xl border border-border bg-background p-3 transition-opacity ${loading ? 'cursor-wait opacity-60' : 'cursor-pointer hover:border-brand'}`}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
+      className={`flex gap-3 rounded-xl border border-border bg-background p-3 transition-opacity ${loading ? 'cursor-wait opacity-60' : 'cursor-pointer hover:border-brand'} focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2`}
     >
       {/* 포스터 */}
       <div className='relative h-[120px] w-[80px] shrink-0 overflow-hidden rounded-lg bg-border'>
