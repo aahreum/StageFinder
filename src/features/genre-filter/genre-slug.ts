@@ -14,6 +14,18 @@ const SLUG_TO_GENRE: Record<string, string> = Object.fromEntries(
   Object.entries(GENRE_TO_SLUG).map(([genre, slug]) => [slug, genre]),
 );
 
+/** KOPIS genrenm 값 → KOPIS shcate 코드 매핑 */
+export const GENRE_TO_KOPIS_CODE: Record<string, string> = {
+  연극: 'AAAA',
+  뮤지컬: 'CCCG',
+  '무용(서양/한국무용)': 'BBBC',
+  '서양음악(클래식)': 'CCCA',
+  '한국음악(국악)': 'CCCD',
+  대중음악: 'GGGA',
+  '서커스/마술': 'EEEA',
+  복합: 'CCCH',
+};
+
 export function genreToSlug(genre: string): string {
   return GENRE_TO_SLUG[genre] ?? genre;
 }
