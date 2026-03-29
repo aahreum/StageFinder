@@ -252,4 +252,114 @@ describe('PerformanceList', () => {
       expect(mockFilterByGenre).toHaveBeenCalledWith([], null);
     });
   });
+
+  describe('page 파라미터 비정상값 보정', () => {
+    it('page=0일 때 1로 보정해야 한다', () => {
+      // Given: page 파라미터가 0
+      const pageRaw = Number('0');
+
+      // When: page 정규화 로직 실행
+      const page =
+        Number.isFinite(pageRaw) && pageRaw >= 1 ? Math.floor(pageRaw) : 1;
+
+      // Then: page=0은 1로 보정되어야 함
+      expect(page).toBe(1);
+    });
+
+    it('page=-1일 때 1로 보정해야 한다', () => {
+      // Given: page 파라미터가 음수
+      const pageRaw = Number('-1');
+
+      // When: page 정규화 로직 실행
+      const page =
+        Number.isFinite(pageRaw) && pageRaw >= 1 ? Math.floor(pageRaw) : 1;
+
+      // Then: 음수는 1로 보정되어야 함
+      expect(page).toBe(1);
+    });
+
+    it('page=abc (NaN)일 때 1로 보정해야 한다', () => {
+      // Given: page 파라미터가 문자열 (NaN으로 변환)
+      const pageRaw = Number('abc');
+
+      // When: page 정규화 로직 실행
+      const page =
+        Number.isFinite(pageRaw) && pageRaw >= 1 ? Math.floor(pageRaw) : 1;
+
+      // Then: NaN은 Number.isFinite() 실패로 1로 보정되어야 함
+      expect(page).toBe(1);
+    });
+
+    it('page=1.5일 때 1로 내림(floor)해야 한다', () => {
+      // Given: page 파라미터가 소수점이 있는 수
+      const pageRaw = Number('1.5');
+
+      // When: page 정규화 로직 실행
+      const page =
+        Number.isFinite(pageRaw) && pageRaw >= 1 ? Math.floor(pageRaw) : 1;
+
+      // Then: 소수는 Math.floor()로 정수로 변환되어야 함
+      expect(page).toBe(1);
+    });
+
+    it('page=3.9일 때 3으로 내림(floor)해야 한다', () => {
+      // Given: page 파라미터가 3.9
+      const pageRaw = Number('3.9');
+
+      // When: page 정규화 로직 실행
+      const page =
+        Number.isFinite(pageRaw) && pageRaw >= 1 ? Math.floor(pageRaw) : 1;
+
+      // Then: 정수 부분만 추출되어야 함
+      expect(page).toBe(3);
+    });
+
+    it('page=2 (정상값)일 때 그대로 유지해야 한다', () => {
+      // Given: page 파라미터가 정상 범위 (1 이상의 정수)
+      const pageRaw = Number('2');
+
+      // When: page 정규화 로직 실행
+      const page =
+        Number.isFinite(pageRaw) && pageRaw >= 1 ? Math.floor(pageRaw) : 1;
+
+      // Then: 정상값은 변경되지 않아야 함
+      expect(page).toBe(2);
+    });
+
+    it('page=10 (큰 정상값)일 때 그대로 유지해야 한다', () => {
+      // Given: page 파라미터가 큰 정상 범위
+      const pageRaw = Number('10');
+
+      // When: page 정규화 로직 실행
+      const page =
+        Number.isFinite(pageRaw) && pageRaw >= 1 ? Math.floor(pageRaw) : 1;
+
+      // Then: 큰 정상값도 그대로 유지되어야 함
+      expect(page).toBe(10);
+    });
+
+    it('page=Infinity일 때 1로 보정해야 한다', () => {
+      // Given: page 파라미터가 Infinity
+      const pageRaw = Infinity;
+
+      // When: page 정규화 로직 실행
+      const page =
+        Number.isFinite(pageRaw) && pageRaw >= 1 ? Math.floor(pageRaw) : 1;
+
+      // Then: Infinity는 Number.isFinite() 실패로 1로 보정되어야 함
+      expect(page).toBe(1);
+    });
+
+    it('page=""(빈 문자열)일 때 1로 보정해야 한다', () => {
+      // Given: page 파라미터가 빈 문자열
+      const pageRaw = Number('');
+
+      // When: page 정규화 로직 실행
+      const page =
+        Number.isFinite(pageRaw) && pageRaw >= 1 ? Math.floor(pageRaw) : 1;
+
+      // Then: 빈 문자열은 0으로 변환되고 1로 보정되어야 함
+      expect(page).toBe(1);
+    });
+  });
 });

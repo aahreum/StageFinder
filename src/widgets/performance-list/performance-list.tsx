@@ -7,12 +7,19 @@ import {
   PerformanceCard,
   type Performance,
 } from '@/entities/performance';
-import { getUniqueGenres, filterByGenre } from '@/features/genre-filter';
+import {
+  getUniqueGenres,
+  filterByGenre,
+  genreToSlug,
+  slugToGenre,
+} from '@/features/genre-filter';
 import { FilterBar } from '@/widgets/filter-bar';
 import { Pagination } from '@/widgets/pagination';
 import type { FetchPerformancesParams } from '@/shared';
 
 const PAGE_SIZE = 20;
+// 전체 데이터를 한 번에 가져와 클라이언트에서 필터 + 페이지네이션 적용
+const FETCH_ROWS = 200;
 
 interface Props {
   params: FetchPerformancesParams;
@@ -23,8 +30,11 @@ export function PerformanceList({ params }: Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const page = Number(searchParams.get('page') ?? '1');
-  const selectedGenre = searchParams.get('genre');
+  const pageRaw = Number(searchParams.get('page') ?? '1');
+  const page = Number.isFinite(pageRaw) && pageRaw >= 1 ? Math.floor(pageRaw) : 1;
+  // URL slug → KOPIS genrenm 변환
+  const genreSlug = searchParams.get('genre');
+  const selectedGenre = genreSlug ? slugToGenre(genreSlug) : null;
 
   // URL 파라미터 일괄 업데이트
   const updateURL = useCallback(
@@ -39,9 +49,10 @@ export function PerformanceList({ params }: Props) {
     [router, pathname, searchParams],
   );
 
-  // 장르 변경 시 page 초기화
+  // 장르 변경: genrenm → slug로 URL 저장, page 초기화
   const handleGenreChange = useCallback(
-    (genre: string | null) => updateURL({ genre, page: null }),
+    (genre: string | null) =>
+      updateURL({ genre: genre ? genreToSlug(genre) : null, page: null }),
     [updateURL],
   );
 
@@ -55,27 +66,35 @@ export function PerformanceList({ params }: Props) {
     [updateURL, page],
   );
 
-  // PAGE_SIZE + 1개 요청으로 다음 페이지 존재 여부 확인
+  // cpage 없이 FETCH_ROWS만큼 전체 데이터 조회 (클라이언트 페이지네이션)
   const queryParams = useMemo(
-    () => ({ ...params, cpage: page, rows: PAGE_SIZE + 1 }),
-    [params, page],
+    () => ({ ...params, cpage: 1, rows: FETCH_ROWS }),
+    [params],
   );
 
-  const { data, isPending, error, isError } = usePerformances(queryParams);
+  const { data, isPending, isError, error } = usePerformances(queryParams);
 
-  const rawList = useMemo<Performance[]>(() => data ?? [], [data]);
-  const hasMore = rawList.length > PAGE_SIZE;
-  const list = useMemo<Performance[]>(() => rawList.slice(0, PAGE_SIZE), [rawList]);
+  const list = useMemo<Performance[]>(() => data ?? [], [data]);
+
+  // genres는 전체 데이터 기준 — 페이지 변경 시에도 FilterBar 유지
   const genres = useMemo(
     () => getUniqueGenres(list.map((p) => p.genre)),
     [list],
   );
-  // NOTE: 클라이언트 필터링 — 현재 페이지(20개) 내에서만 동작함
-  // 다른 페이지에 같은 장르의 데이터가 있어도 표시되지 않음
-  // TODO: 서버 사이드 필터링(KOPIS genrenm 파라미터)으로 개선 필요
+
+  // NOTE: 클라이언트 필터링 — FETCH_ROWS(200개) 내에서 동작
+  // TODO: 서버 사이드 필터링(KOPIS shgenrenm 파라미터)으로 개선 필요
   const filtered = useMemo(
     () => filterByGenre(list, selectedGenre),
     [list, selectedGenre],
+  );
+
+  // 전체 필터 결과 기준으로 페이지네이션
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE) || 1;
+  const hasMore = page < totalPages;
+  const paginatedList = useMemo(
+    () => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [filtered, page],
   );
 
   if (isPending) {
@@ -102,13 +121,13 @@ export function PerformanceList({ params }: Props) {
         onGenreChange={handleGenreChange}
       />
 
-      {filtered.length === 0 ? (
+      {paginatedList.length === 0 ? (
         <div className='flex flex-1 items-center justify-center text-subtle'>
           공연 정보가 없습니다.
         </div>
       ) : (
         <ul className='grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3'>
-          {filtered.map((performance) => (
+          {paginatedList.map((performance) => (
             <li key={performance.id}>
               <PerformanceCard performance={performance} />
             </li>
