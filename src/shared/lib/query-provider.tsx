@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState } from "react";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useState } from 'react';
 
 export function QueryProvider({ children }: { children: React.ReactNode }) {
   // 요청마다 새 QueryClient 생성을 방지하기 위해 useState 사용

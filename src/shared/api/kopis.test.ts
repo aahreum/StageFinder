@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { fetchPerformances } from "./kopis";
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { fetchPerformances } from './kopis';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -46,7 +46,10 @@ function mockOkResponse(body: string): Response {
   } as unknown as Response;
 }
 
-function mockErrorResponse(status: number, body = "Internal Server Error"): Response {
+function mockErrorResponse(
+  status: number,
+  body = 'Internal Server Error',
+): Response {
   return {
     ok: false,
     status,
@@ -54,23 +57,23 @@ function mockErrorResponse(status: number, body = "Internal Server Error"): Resp
   } as unknown as Response;
 }
 
-const VALID_PARAMS = { stdate: "20250101", eddate: "20251231" };
+const VALID_PARAMS = { stdate: '20250101', eddate: '20251231' };
 
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
 
-describe("fetchPerformances", () => {
+describe('fetchPerformances', () => {
   beforeEach(() => {
-    vi.stubGlobal("fetch", vi.fn());
-    process.env.KOPIS_API_KEY = "test-api-key";
+    vi.stubGlobal('fetch', vi.fn());
+    process.env.KOPIS_API_KEY = 'test-api-key';
   });
 
   // -------------------------------------------------------------------------
   // 1. 정상 응답 - 복수 결과 배열 반환
   // -------------------------------------------------------------------------
-  describe("복수의 공연 결과가 있을 때", () => {
-    it("각 항목을 배열로 반환해야 한다", async () => {
+  describe('복수의 공연 결과가 있을 때', () => {
+    it('각 항목을 배열로 반환해야 한다', async () => {
       // Given
       const xml = makeXml(SINGLE_DB + SECOND_DB);
       vi.mocked(fetch).mockResolvedValue(mockOkResponse(xml));
@@ -80,16 +83,16 @@ describe("fetchPerformances", () => {
 
       // Then
       expect(result).toHaveLength(2);
-      expect(result[0].mt20id).toBe("PF279014");
-      expect(result[1].mt20id).toBe("PF279015");
+      expect(result[0].mt20id).toBe('PF279014');
+      expect(result[1].mt20id).toBe('PF279015');
     });
   });
 
   // -------------------------------------------------------------------------
   // 2. 정상 응답 - 단일 결과도 배열로 반환
   // -------------------------------------------------------------------------
-  describe("단일 공연 결과가 있을 때", () => {
-    it("단일 결과도 배열로 반환해야 한다", async () => {
+  describe('단일 공연 결과가 있을 때', () => {
+    it('단일 결과도 배열로 반환해야 한다', async () => {
       // Given
       const xml = makeXml(SINGLE_DB);
       vi.mocked(fetch).mockResolvedValue(mockOkResponse(xml));
@@ -100,18 +103,18 @@ describe("fetchPerformances", () => {
       // Then
       expect(Array.isArray(result)).toBe(true);
       expect(result).toHaveLength(1);
-      expect(result[0].mt20id).toBe("PF279014");
-      expect(result[0].prfnm).toBe("테스트 공연");
+      expect(result[0].mt20id).toBe('PF279014');
+      expect(result[0].prfnm).toBe('테스트 공연');
     });
   });
 
   // -------------------------------------------------------------------------
   // 3. 빈 결과 (db 없음) - 빈 배열 반환
   // -------------------------------------------------------------------------
-  describe("공연 결과가 없을 때", () => {
-    it("빈 배열을 반환해야 한다", async () => {
+  describe('공연 결과가 없을 때', () => {
+    it('빈 배열을 반환해야 한다', async () => {
       // Given
-      const xml = makeXml(""); // <dbs></dbs>
+      const xml = makeXml(''); // <dbs></dbs>
       vi.mocked(fetch).mockResolvedValue(mockOkResponse(xml));
 
       // When
@@ -125,24 +128,24 @@ describe("fetchPerformances", () => {
   // -------------------------------------------------------------------------
   // 4. API_KEY 없을 때 에러
   // -------------------------------------------------------------------------
-  describe("KOPIS_API_KEY 환경변수가 없을 때", () => {
-    it("환경변수 관련 에러를 던져야 한다", async () => {
+  describe('KOPIS_API_KEY 환경변수가 없을 때', () => {
+    it('환경변수 관련 에러를 던져야 한다', async () => {
       // Given
       delete process.env.KOPIS_API_KEY;
 
       // When / Then
       await expect(fetchPerformances(VALID_PARAMS)).rejects.toThrow(
-        "KOPIS_API_KEY 환경변수가 설정되지 않았습니다."
+        'KOPIS_API_KEY 환경변수가 설정되지 않았습니다.',
       );
     });
 
-    it("빈 문자열인 경우에도 에러를 던져야 한다", async () => {
+    it('빈 문자열인 경우에도 에러를 던져야 한다', async () => {
       // Given
-      process.env.KOPIS_API_KEY = "   "; // 공백만 있는 경우 (.trim() 후 빈 문자열)
+      process.env.KOPIS_API_KEY = '   '; // 공백만 있는 경우 (.trim() 후 빈 문자열)
 
       // When / Then
       await expect(fetchPerformances(VALID_PARAMS)).rejects.toThrow(
-        "KOPIS_API_KEY 환경변수가 설정되지 않았습니다."
+        'KOPIS_API_KEY 환경변수가 설정되지 않았습니다.',
       );
     });
   });
@@ -150,34 +153,34 @@ describe("fetchPerformances", () => {
   // -------------------------------------------------------------------------
   // 5. 날짜 형식이 잘못됐을 때 에러
   // -------------------------------------------------------------------------
-  describe("날짜 형식이 YYYYMMDD가 아닐 때", () => {
-    it("stdate 형식이 잘못됐을 때 에러를 던져야 한다", async () => {
+  describe('날짜 형식이 YYYYMMDD가 아닐 때', () => {
+    it('stdate 형식이 잘못됐을 때 에러를 던져야 한다', async () => {
       // Given
-      const params = { stdate: "2025-01-01", eddate: "20251231" };
+      const params = { stdate: '2025-01-01', eddate: '20251231' };
 
       // When / Then
       await expect(fetchPerformances(params)).rejects.toThrow(
-        "날짜 형식이 올바르지 않습니다. YYYYMMDD 형식으로 입력하세요."
+        '날짜 형식이 올바르지 않습니다. YYYYMMDD 형식으로 입력하세요.',
       );
     });
 
-    it("eddate 형식이 잘못됐을 때 에러를 던져야 한다", async () => {
+    it('eddate 형식이 잘못됐을 때 에러를 던져야 한다', async () => {
       // Given
-      const params = { stdate: "20250101", eddate: "2025/12/31" };
+      const params = { stdate: '20250101', eddate: '2025/12/31' };
 
       // When / Then
       await expect(fetchPerformances(params)).rejects.toThrow(
-        "날짜 형식이 올바르지 않습니다. YYYYMMDD 형식으로 입력하세요."
+        '날짜 형식이 올바르지 않습니다. YYYYMMDD 형식으로 입력하세요.',
       );
     });
 
-    it("날짜가 8자리 숫자가 아닐 때 에러를 던져야 한다", async () => {
+    it('날짜가 8자리 숫자가 아닐 때 에러를 던져야 한다', async () => {
       // Given
-      const params = { stdate: "202501", eddate: "20251231" };
+      const params = { stdate: '202501', eddate: '20251231' };
 
       // When / Then
       await expect(fetchPerformances(params)).rejects.toThrow(
-        "날짜 형식이 올바르지 않습니다. YYYYMMDD 형식으로 입력하세요."
+        '날짜 형식이 올바르지 않습니다. YYYYMMDD 형식으로 입력하세요.',
       );
     });
   });
@@ -185,24 +188,28 @@ describe("fetchPerformances", () => {
   // -------------------------------------------------------------------------
   // 6. HTTP 에러 응답 시 에러
   // -------------------------------------------------------------------------
-  describe("HTTP 에러 응답이 올 때", () => {
-    it("500 응답일 때 에러를 던져야 한다", async () => {
+  describe('HTTP 에러 응답이 올 때', () => {
+    it('500 응답일 때 에러를 던져야 한다', async () => {
       // Given
-      vi.mocked(fetch).mockResolvedValue(mockErrorResponse(500, "Internal Server Error"));
+      vi.mocked(fetch).mockResolvedValue(
+        mockErrorResponse(500, 'Internal Server Error'),
+      );
 
       // When / Then
       await expect(fetchPerformances(VALID_PARAMS)).rejects.toThrow(
-        "KOPIS API 오류: 500 - Internal Server Error"
+        'KOPIS API 오류: 500 - Internal Server Error',
       );
     });
 
-    it("401 응답일 때 에러를 던져야 한다", async () => {
+    it('401 응답일 때 에러를 던져야 한다', async () => {
       // Given
-      vi.mocked(fetch).mockResolvedValue(mockErrorResponse(401, "Unauthorized"));
+      vi.mocked(fetch).mockResolvedValue(
+        mockErrorResponse(401, 'Unauthorized'),
+      );
 
       // When / Then
       await expect(fetchPerformances(VALID_PARAMS)).rejects.toThrow(
-        "KOPIS API 오류: 401 - Unauthorized"
+        'KOPIS API 오류: 401 - Unauthorized',
       );
     });
   });
@@ -212,10 +219,10 @@ describe("fetchPerformances", () => {
   //    fast-xml-parser는 잘못된 XML도 파싱을 시도하므로,
   //    dbs 노드가 없는 경우 빈 배열을 반환한다.
   // -------------------------------------------------------------------------
-  describe("잘못된 XML 응답이 올 때", () => {
-    it("dbs 노드가 없는 XML 응답일 때 빈 배열을 반환해야 한다", async () => {
+  describe('잘못된 XML 응답이 올 때', () => {
+    it('dbs 노드가 없는 XML 응답일 때 빈 배열을 반환해야 한다', async () => {
       // Given
-      const malformedXml = "<unexpected><data>값</data></unexpected>";
+      const malformedXml = '<unexpected><data>값</data></unexpected>';
       vi.mocked(fetch).mockResolvedValue(mockOkResponse(malformedXml));
 
       // When
@@ -225,9 +232,9 @@ describe("fetchPerformances", () => {
       expect(result).toEqual([]);
     });
 
-    it("완전히 깨진 XML(plain text)이 올 때 빈 배열을 반환해야 한다", async () => {
+    it('완전히 깨진 XML(plain text)이 올 때 빈 배열을 반환해야 한다', async () => {
       // Given – fast-xml-parser는 일반 텍스트도 예외 없이 파싱하므로 dbs 없음 → []
-      const plainText = "not xml at all !!!";
+      const plainText = 'not xml at all !!!';
       vi.mocked(fetch).mockResolvedValue(mockOkResponse(plainText));
 
       // When

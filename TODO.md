@@ -59,6 +59,30 @@
   - 메인 화면 안내문구 추가 (오늘 기준 3개월치)
   - ✅ 검증: 페이지 전환 시 다음 20개 로드, 두 상태 모두 표시
 
+- [x] improve-filter-pagination-sync
+  - 필터 변경 시 페이지 초기화
+  - 필터 적용 상태에서 페이지네이션 유지
+  - ✅ 검증: 필터 적용 후 페이지 이동 시에도 필터 유지
+
+- [x] persist-filter-state
+  - URL query string 기반 상태 관리 (genre, page 등)
+  - 새로고침 시 동일 상태 유지
+  - ✅ 검증: 새로고침 후에도 동일 상태 유지
+
+- [x] refactor-component-structure
+  - FilterBar, Pagination, PerformanceList, PerformanceItem 분리
+  - props 기반 구조로 리팩토링
+  - ✅ 검증: 각 컴포넌트 독립적으로 동작
+
+- [x] apply-clsx
+  - 조건부 className을 clsx로 리팩토링
+  - ✅ 검증: className 가독성 개선
+
+- [x] setup-prettier
+  - prettier 설치 및 설정 적용
+  - 전체 코드 포맷팅
+  - ✅ 검증: 일관된 코드 스타일 유지
+
 - [ ] implement-region-filter
   - 지역 필터
   - ✅ 검증: 지역 기준 필터링

@@ -1,17 +1,26 @@
-import { PerformanceList } from "@/widgets";
-import { getPerformanceDateParams } from "@/shared";
+import { Suspense } from 'react';
+import { PerformanceList } from '@/widgets';
+import { getPerformanceDateParams } from '@/shared';
 
 export default function Home() {
   return (
     <>
-      <header className="border-b border-border px-4 py-3">
-        <h1 className="text-lg font-semibold text-brand">StageFinder</h1>
+      <header className='border-b border-border px-4 py-3'>
+        <h1 className='text-lg font-semibold text-brand'>StageFinder</h1>
       </header>
-      <main className="flex flex-1 flex-col">
-        <p className="px-3 py-2 my-2 mx-4 text-sm bg-brand/10 text-brand rounded-xl">
+      <main className='flex flex-1 flex-col'>
+        <p className='px-3 py-2 my-2 mx-4 text-sm bg-brand/10 text-brand rounded-xl'>
           📢 오늘부터 3개월간 공연 예정 · 공연 중인 공연을 보여드립니다.
         </p>
-        <PerformanceList params={getPerformanceDateParams()} />
+        <Suspense
+          fallback={
+            <div className='flex flex-1 items-center justify-center text-subtle'>
+              불러오는 중...
+            </div>
+          }>
+          {/* Server Component — 요청당 1회 실행. new Date() 기반이라 상수화 불가 */}
+          <PerformanceList params={getPerformanceDateParams()} />
+        </Suspense>
       </main>
     </>
   );
