@@ -83,6 +83,29 @@
   - 전체 코드 포맷팅
   - ✅ 검증: 일관된 코드 스타일 유지
 
+- [x] fix-filter-url-slug
+  - genre URL을 한글 대신 영어 slug로 변환 (예: 대중음악 → pop)
+  - slug ↔ genrenm 양방향 매핑
+  - ✅ 검증: URL에 영어 slug 표시, 필터 동작 유지
+
+- [x] fix-filter-pagination-count
+  - 전체 데이터 fetch → 클라이언트 필터 → 클라이언트 페이지네이션 순서로 변경
+  - 필터 적용 후에도 항상 20개씩 표시
+  - ✅ 검증: 장르 필터 후 페이지당 20개 유지
+
+- [x] fix-filter-ui-persistence
+  - FilterBar가 페이지 변경과 무관하게 항상 렌더링
+  - ✅ 검증: 페이지 이동 시 FilterBar 유지
+
+- [x] fix-pagination-button-state
+  - 전체 필터된 데이터 기준으로 마지막 페이지 계산
+  - lastPage에서 next 비활성화, firstPage에서 prev 비활성화
+  - ✅ 검증: 마지막 페이지에서 next 버튼 비활성화
+
+- [x] document-filter-data-flow
+  - 필터 적용 전/후 데이터 흐름을 docs/filter-data-flow.md로 문서화
+  - ✅ 검증: 데이터 흐름 명확하게 문서화
+
 - [ ] implement-region-filter
   - 지역 필터
   - ✅ 검증: 지역 기준 필터링
@@ -150,3 +173,48 @@
 - API 호출 최소화
 - KOPIS 응답 정규화 필요
 - FSD 구조 준수
+
+---
+
+## 현재 아키텍처 (2026-03-29 기준)
+
+```
+KOPIS API (rows=200, cpage=1)
+  ↓
+usePerformances (TanStack Query 캐싱)
+  ↓
+list (전체 데이터, 최대 200개)
+  ↓ getUniqueGenres → genres → FilterBar (항상 렌더링)
+  ↓ filterByGenre(selectedGenre) → filtered
+  ↓ slice((page-1)*20, page*20) → paginatedList → PerformanceCard × 20
+  ↓ Math.ceil(filtered.length / 20) → totalPages → Pagination
+```
+
+URL 상태: `/?genre=musical&page=2` (genre는 영어 slug)
+
+---
+
+## 테스트 현황
+
+| 파일 | 주요 내용 |
+|---|---|
+| `shared/api/kopis.test.ts` | 날짜 형식, API 파라미터 검증 |
+| `features/genre-filter/genre-filter.test.ts` | getUniqueGenres, filterByGenre, GenreFilter |
+| `features/genre-filter/genre-slug.test.ts` | genreToSlug, slugToGenre, 양방향 일관성 |
+| `widgets/performance-list/performance-list.test.ts` | 날짜 파라미터, 로딩/에러/빈 데이터/정상 상태 |
+
+총 **84개** 테스트 통과
+
+---
+
+## 주요 수정 이력
+
+- **KOPIS API 키 노출** → `/api/performances` API Route 프록시로 해결
+- **PR #26 코드리뷰 개선**
+  - `handlePrev`/`handleNext` → `useCallback` 분리
+  - 클라이언트 필터링 한계 NOTE/TODO 주석 추가
+  - `genre-filter.utils.ts` 분리 (`'use client'` 번들 제외)
+  - `shared/ui/button-class.ts`로 버튼 className 통합
+  - PerformanceList 상태별 테스트 추가 (로딩/에러/빈 데이터/정상)
+- **hasMore 오탐지** → `PAGE_SIZE+1` 요청 후 `data.length > PAGE_SIZE` 판단
+- **필터 + 페이지네이션 개수 불일치** → 전체 200개 fetch 후 클라이언트에서 필터·슬라이싱으로 해결
