@@ -1,1 +1,1 @@
-export { PerformanceList } from "./performance-list";
+export { PerformanceList } from './performance-list';

@@ -1,17 +1,16 @@
-"use client";
+'use client';
 
-import { useState, useMemo } from "react";
+import { useCallback, useMemo } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import {
   usePerformances,
   PerformanceCard,
   type Performance,
-} from "@/entities/performance";
-import {
-  GenreFilter,
-  getUniqueGenres,
-  filterByGenre,
-} from "@/features/genre-filter";
-import type { FetchPerformancesParams } from "@/shared";
+} from '@/entities/performance';
+import { getUniqueGenres, filterByGenre } from '@/features/genre-filter';
+import { FilterBar } from '@/widgets/filter-bar';
+import { Pagination } from '@/widgets/pagination';
+import type { FetchPerformancesParams } from '@/shared';
 
 const PAGE_SIZE = 20;
 
@@ -20,8 +19,31 @@ interface Props {
 }
 
 export function PerformanceList({ params }: Props) {
-  const [page, setPage] = useState(1);
-  const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const page = Number(searchParams.get('page') ?? '1');
+  const selectedGenre = searchParams.get('genre');
+
+  // URL 파라미터 일괄 업데이트
+  const updateURL = useCallback(
+    (updates: Record<string, string | null>) => {
+      const next = new URLSearchParams(searchParams.toString());
+      for (const [key, value] of Object.entries(updates)) {
+        if (value === null) next.delete(key);
+        else next.set(key, value);
+      }
+      router.push(`${pathname}?${next.toString()}`);
+    },
+    [router, pathname, searchParams],
+  );
+
+  // 장르 변경 시 page 초기화
+  const handleGenreChange = useCallback(
+    (genre: string | null) => updateURL({ genre, page: null }),
+    [updateURL],
+  );
 
   const queryParams = useMemo(
     () => ({ ...params, cpage: page, rows: PAGE_SIZE }),
@@ -42,7 +64,7 @@ export function PerformanceList({ params }: Props) {
 
   if (isPending) {
     return (
-      <div className="flex flex-1 items-center justify-center text-subtle">
+      <div className='flex flex-1 items-center justify-center text-subtle'>
         불러오는 중...
       </div>
     );
@@ -50,26 +72,26 @@ export function PerformanceList({ params }: Props) {
 
   if (isError) {
     return (
-      <div className="flex flex-1 items-center justify-center text-error">
+      <div className='flex flex-1 items-center justify-center text-error'>
         오류가 발생했습니다: {error.message}
       </div>
     );
   }
 
   return (
-    <div className="flex flex-1 flex-col">
-      <GenreFilter
+    <div className='flex flex-1 flex-col'>
+      <FilterBar
         genres={genres}
-        selected={selectedGenre}
-        onChange={setSelectedGenre}
+        selectedGenre={selectedGenre}
+        onGenreChange={handleGenreChange}
       />
 
       {filtered.length === 0 ? (
-        <div className="flex flex-1 items-center justify-center text-subtle">
+        <div className='flex flex-1 items-center justify-center text-subtle'>
           공연 정보가 없습니다.
         </div>
       ) : (
-        <ul className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className='grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3'>
           {filtered.map((performance) => (
             <li key={performance.id}>
               <PerformanceCard performance={performance} />
@@ -78,32 +100,12 @@ export function PerformanceList({ params }: Props) {
         </ul>
       )}
 
-      {/* 페이지네이션 */}
-      <div className="flex items-center justify-center gap-4 border-t border-border py-4">
-        <button
-          type="button"
-          onClick={() => {
-            setPage((p) => p - 1);
-            setSelectedGenre(null);
-          }}
-          disabled={page === 1}
-          className="cursor-pointer disabled:cursor-not-allowed rounded-lg border border-border px-4 py-2 text-sm disabled:opacity-40 enabled:hover:border-brand enabled:hover:text-brand"
-        >
-          이전
-        </button>
-        <span className="text-sm text-subtle">{page} 페이지</span>
-        <button
-          type="button"
-          onClick={() => {
-            setPage((p) => p + 1);
-            setSelectedGenre(null);
-          }}
-          disabled={list.length < PAGE_SIZE}
-          className="cursor-pointer disabled:cursor-not-allowed rounded-lg border border-border px-4 py-2 text-sm disabled:opacity-40 enabled:hover:border-brand enabled:hover:text-brand"
-        >
-          다음
-        </button>
-      </div>
+      <Pagination
+        page={page}
+        hasMore={list.length >= PAGE_SIZE}
+        onPrev={() => updateURL({ page: String(page - 1) })}
+        onNext={() => updateURL({ page: String(page + 1) })}
+      />
     </div>
   );
 }

@@ -1,8 +1,8 @@
-import type { FetchPerformancesParams, KopisPerformanceRaw } from "./kopis";
+import type { FetchPerformancesParams, KopisPerformanceRaw } from './kopis';
 
 /** 클라이언트에서 내부 API Route를 통해 공연 데이터 조회 */
 export async function fetchPerformancesClient(
-  params: FetchPerformancesParams
+  params: FetchPerformancesParams,
 ): Promise<KopisPerformanceRaw[]> {
   const query = new URLSearchParams({
     stdate: params.stdate,
@@ -15,7 +15,7 @@ export async function fetchPerformancesClient(
 
   const res = await fetch(`/api/performances?${query}`);
   if (!res.ok) {
-    const body = await res.json().catch(() => ({ error: "Unknown error" }));
+    const body = await res.json().catch(() => ({ error: 'Unknown error' }));
     throw new Error(body.error ?? `API 오류: ${res.status}`);
   }
 

@@ -1,11 +1,11 @@
-import type { KopisPerformanceRaw } from "@/shared";
+import type { KopisPerformanceRaw } from '@/shared';
 
-export type PerformanceStatus = "공연예정" | "공연중" | "완료";
+export type PerformanceStatus = '공연예정' | '공연중' | '완료';
 
 const STATUS_MAP: Record<string, PerformanceStatus> = {
-  공연예정: "공연예정",
-  공연중: "공연중",
-  완료: "완료",
+  공연예정: '공연예정',
+  공연중: '공연중',
+  완료: '완료',
 };
 
 export interface Performance {
@@ -35,7 +35,7 @@ export function toPerformance(raw: KopisPerformanceRaw): Performance {
     poster: raw.poster,
     area: raw.area,
     genre: raw.genrenm,
-    isOpenRun: raw.openrun === "Y",
+    isOpenRun: raw.openrun === 'Y',
     status,
   };
 }

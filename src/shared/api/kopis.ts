@@ -1,21 +1,21 @@
-import { XMLParser } from "fast-xml-parser";
+import { XMLParser } from 'fast-xml-parser';
 
-const BASE_URL = "https://kopis.or.kr/openApi/restful/pblprfr";
+const BASE_URL = 'https://kopis.or.kr/openApi/restful/pblprfr';
 const parser = new XMLParser();
 
 const DATE_REGEX = /^\d{8}$/;
 
 export interface KopisPerformanceRaw {
-  mt20id: string;    // 공연 ID
-  prfnm: string;     // 공연명
+  mt20id: string; // 공연 ID
+  prfnm: string; // 공연명
   prfpdfrom: string; // 공연 시작일
-  prfpdto: string;   // 공연 종료일
-  fcltynm: string;   // 공연시설명
-  poster: string;    // 포스터 이미지 URL
-  area: string;      // 지역
-  genrenm: string;   // 장르명
-  openrun: string;   // 오픈런 여부
-  prfstate: string;  // 공연 상태
+  prfpdto: string; // 공연 종료일
+  fcltynm: string; // 공연시설명
+  poster: string; // 포스터 이미지 URL
+  area: string; // 지역
+  genrenm: string; // 장르명
+  openrun: string; // 오픈런 여부
+  prfstate: string; // 공연 상태
 }
 
 export interface FetchPerformancesParams {
@@ -24,17 +24,19 @@ export interface FetchPerformancesParams {
   cpage?: number;
   rows?: number;
   signgucode?: string; // 지역 코드
-  prfstate?: "01" | "02" | "03"; // 01:예정 02:공연중 03:완료
+  prfstate?: '01' | '02' | '03'; // 01:예정 02:공연중 03:완료
 }
 
 export async function fetchPerformances(
-  params: FetchPerformancesParams
+  params: FetchPerformancesParams,
 ): Promise<KopisPerformanceRaw[]> {
   const apiKey = process.env.KOPIS_API_KEY?.trim();
-  if (!apiKey) throw new Error("KOPIS_API_KEY 환경변수가 설정되지 않았습니다.");
+  if (!apiKey) throw new Error('KOPIS_API_KEY 환경변수가 설정되지 않았습니다.');
 
   if (!DATE_REGEX.test(params.stdate) || !DATE_REGEX.test(params.eddate)) {
-    throw new Error("날짜 형식이 올바르지 않습니다. YYYYMMDD 형식으로 입력하세요.");
+    throw new Error(
+      '날짜 형식이 올바르지 않습니다. YYYYMMDD 형식으로 입력하세요.',
+    );
   }
 
   const query = new URLSearchParams({
@@ -47,9 +49,11 @@ export async function fetchPerformances(
     ...(params.prfstate && { prfstate: params.prfstate }),
   });
 
-  const res = await fetch(`${BASE_URL}?${query}`, { next: { revalidate: 3600 } });
+  const res = await fetch(`${BASE_URL}?${query}`, {
+    next: { revalidate: 3600 },
+  });
   if (!res.ok) {
-    const errorBody = await res.text().catch(() => "Unknown error");
+    const errorBody = await res.text().catch(() => 'Unknown error');
     throw new Error(`KOPIS API 오류: ${res.status} - ${errorBody}`);
   }
 
@@ -59,7 +63,7 @@ export async function fetchPerformances(
   try {
     parsed = parser.parse(xml);
   } catch {
-    throw new Error("KOPIS API 응답 파싱 실패: 유효하지 않은 XML 형식");
+    throw new Error('KOPIS API 응답 파싱 실패: 유효하지 않은 XML 형식');
   }
 
   const db = parsed?.dbs?.db;
