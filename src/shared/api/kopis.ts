@@ -25,6 +25,7 @@ export interface FetchPerformancesParams {
   cpage?: number;
   rows?: number;
   signgucode?: string; // 지역 코드
+  shcate?: string; // 장르 코드 (AAAA=연극, CCCG=뮤지컬 등)
   prfstate?: '01' | '02' | '03'; // 01:예정 02:공연중 03:완료
 }
 
@@ -80,6 +81,7 @@ export async function fetchPerformances(
     cpage: String(params.cpage ?? 1),
     rows: String(params.rows ?? 20),
     ...(params.signgucode && { signgucode: params.signgucode }),
+    ...(params.shcate && { shcate: params.shcate }),
     ...(params.prfstate && { prfstate: params.prfstate }),
   });
 

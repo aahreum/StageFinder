@@ -8,14 +8,14 @@ import {
 } from "@/entities/performance";
 import {
   GenreFilter,
-  filterByGenre,
   GENRE_TO_SLUG,
+  GENRE_TO_KOPIS_CODE,
 } from "@/features/genre-filter";
+import { RegionFilter } from "@/features/region-filter";
+import type { FetchPerformancesParams } from "@/shared";
 
 // region이 바뀌어도 항상 고정 표시할 장르 목록
 const FIXED_GENRES = Object.keys(GENRE_TO_SLUG);
-import { RegionFilter } from "@/features/region-filter";
-import type { FetchPerformancesParams } from "@/shared";
 
 const PAGE_SIZE = 20;
 
@@ -34,17 +34,15 @@ export function PerformanceList({ params }: Props) {
       cpage: page,
       rows: PAGE_SIZE,
       ...(selectedRegion && { signgucode: selectedRegion }),
+      // 장르 필터를 서버사이드로 전달 (클라이언트 필터링 대신 KOPIS shcate 사용)
+      ...(selectedGenre && { shcate: GENRE_TO_KOPIS_CODE[selectedGenre] }),
     }),
-    [params, page, selectedRegion],
+    [params, page, selectedRegion, selectedGenre],
   );
 
   const { data, isPending, error, isError } = usePerformances(queryParams);
 
   const list = useMemo<Performance[]>(() => data ?? [], [data]);
-  const filtered = useMemo(
-    () => filterByGenre(list, selectedGenre),
-    [list, selectedGenre],
-  );
 
   if (isPending) {
     return (
@@ -74,16 +72,19 @@ export function PerformanceList({ params }: Props) {
       <GenreFilter
         genres={FIXED_GENRES}
         selected={selectedGenre}
-        onChange={setSelectedGenre}
+        onChange={(genre) => {
+          setSelectedGenre(genre);
+          setPage(1);
+        }}
       />
 
-      {filtered.length === 0 ? (
+      {list.length === 0 ? (
         <div className="flex flex-1 items-center justify-center text-subtle">
           공연 정보가 없습니다.
         </div>
       ) : (
         <ul className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((performance) => (
+          {list.map((performance) => (
             <li key={performance.id}>
               <PerformanceCard performance={performance} />
             </li>
