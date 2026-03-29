@@ -1,5 +1,4 @@
 import { describe, it, expect, vi } from "vitest";
-import type { FetchPerformancesParams } from "@/shared";
 
 // 트랜지티브 Supabase 초기화 에러 방지를 위해 의존성 모킹
 vi.mock("@/entities/performance", () => ({
@@ -12,39 +11,29 @@ vi.mock("@/shared", () => ({
 }));
 
 import { PerformanceList } from "./performance-list";
+// shared barrel을 거치지 않고 직접 import하여 Supabase 초기화 우회
+import { getPerformanceDateParams } from "../../shared/lib/date-params";
 
-// ---------------------------------------------------------------------------
-// app/page.tsx의 getTodayParams 로직 재현 (날짜 포맷 검증용)
-// ---------------------------------------------------------------------------
-function getTodayParams(): FetchPerformancesParams {
-  const today = new Date();
-  const end = new Date(today);
-  end.setMonth(end.getMonth() + 3);
-  const fmt = (d: Date) =>
-    `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
-  return { stdate: fmt(today), eddate: fmt(end), prfstate: "02" as const };
-}
-
-describe("getTodayParams 날짜 형식 검증", () => {
+describe("getPerformanceDateParams 날짜 형식 검증", () => {
   it("stdate가 YYYYMMDD 8자리여야 한다", () => {
-    expect(getTodayParams().stdate).toMatch(/^\d{8}$/);
+    expect(getPerformanceDateParams().stdate).toMatch(/^\d{8}$/);
   });
 
   it("eddate가 YYYYMMDD 8자리여야 한다", () => {
-    expect(getTodayParams().eddate).toMatch(/^\d{8}$/);
+    expect(getPerformanceDateParams().eddate).toMatch(/^\d{8}$/);
   });
 
   it("eddate가 stdate보다 미래여야 한다", () => {
-    const { stdate, eddate } = getTodayParams();
+    const { stdate, eddate } = getPerformanceDateParams();
     expect(parseInt(eddate)).toBeGreaterThan(parseInt(stdate));
   });
 
   it("prfstate가 '02'(공연중)여야 한다", () => {
-    expect(getTodayParams().prfstate).toBe("02");
+    expect(getPerformanceDateParams().prfstate).toBe("02");
   });
 
   it("eddate가 stdate 기준 3개월 후여야 한다", () => {
-    const { eddate } = getTodayParams();
+    const { eddate } = getPerformanceDateParams();
     const future = new Date();
     future.setMonth(future.getMonth() + 3);
     const expected = `${future.getFullYear()}${String(future.getMonth() + 1).padStart(2, "0")}`;
