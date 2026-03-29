@@ -5,7 +5,7 @@ import type { Performance } from './model';
 export const STATUS_COLOR: Record<Performance['status'], string> = {
   공연예정: 'bg-warning/10 text-warning',
   공연중: 'bg-success/10 text-success',
-  완료: 'bg-subtle/10 text-subtle',
+  공연완료: 'bg-subtle/10 text-subtle',
 };
 
 interface Props {

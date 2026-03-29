@@ -12,7 +12,7 @@ interface Props {
 
 export function RegionFilter({ areas, selected, onChange }: Props) {
   return (
-    <div className='flex flex-wrap gap-2 px-4 py-2'>
+    <div className='flex flex-wrap gap-2 py-1'>
       <button
         type='button'
         aria-pressed={selected === null}

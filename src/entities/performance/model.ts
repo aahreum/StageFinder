@@ -1,11 +1,12 @@
 import type { KopisPerformanceRaw } from '@/shared';
 
-export type PerformanceStatus = '공연예정' | '공연중' | '완료';
+export type PerformanceStatus = '공연예정' | '공연중' | '공연완료';
 
+// KOPIS 응답의 prfstate 실제 반환값 기준 매핑
 const STATUS_MAP: Record<string, PerformanceStatus> = {
   공연예정: '공연예정',
   공연중: '공연중',
-  완료: '완료',
+  공연완료: '공연완료', // KOPIS 실제 응답값
 };
 
 export interface Performance {

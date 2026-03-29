@@ -26,17 +26,23 @@ export function FilterBar({
   onDateChange,
 }: Props) {
   return (
-    <div className='border-b border-border'>
-      <GenreFilter
-        genres={genres}
-        selected={selectedGenre}
-        onChange={onGenreChange}
-      />
-      <RegionFilter
-        areas={areas}
-        selected={selectedArea}
-        onChange={onAreaChange}
-      />
+    <div className='border-b border-border divide-y divide-border'>
+      <div className='flex items-center gap-2 px-4 py-1'>
+        <span className='text-xs font-medium text-subtle w-8 shrink-0'>장르</span>
+        <GenreFilter
+          genres={genres}
+          selected={selectedGenre}
+          onChange={onGenreChange}
+        />
+      </div>
+      <div className='flex items-center gap-2 px-4 py-1'>
+        <span className='text-xs font-medium text-subtle w-8 shrink-0'>지역</span>
+        <RegionFilter
+          areas={areas}
+          selected={selectedArea}
+          onChange={onAreaChange}
+        />
+      </div>
       <DateFilter dateFrom={dateFrom} dateTo={dateTo} onChange={onDateChange} />
     </div>
   );

@@ -1,7 +1,8 @@
 import { XMLParser } from 'fast-xml-parser';
 
 const BASE_URL = 'https://kopis.or.kr/openApi/restful/pblprfr';
-const parser = new XMLParser();
+// parseTagValue: false — "01" 같은 숫자 문자열이 number로 변환되는 것 방지
+const parser = new XMLParser({ parseTagValue: false });
 
 const DATE_REGEX = /^\d{8}$/;
 
