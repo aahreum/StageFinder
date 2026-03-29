@@ -1,5 +1,8 @@
+'use client';
+import { useState } from 'react';
 import Image from 'next/image';
 import type { Performance } from './model';
+import { getBookingUrl } from './actions';
 
 // 공연 상태별 배지 색상 (테스트에서 import 가능하도록 export)
 export const STATUS_COLOR: Record<Performance["status"], string> = {
@@ -13,7 +16,10 @@ interface Props {
 }
 
 export function PerformanceCard({ performance }: Props) {
+  const [loading, setLoading] = useState(false);
+
   const {
+    id,
     title,
     poster,
     venue,
@@ -25,8 +31,22 @@ export function PerformanceCard({ performance }: Props) {
     isOpenRun,
   } = performance;
 
+  async function handleClick() {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const url = await getBookingUrl(id);
+      if (url) window.open(url, '_blank', 'noopener,noreferrer');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <article className='flex gap-3 rounded-xl border border-border bg-background p-3'>
+    <article
+      onClick={handleClick}
+      className={`flex gap-3 rounded-xl border border-border bg-background p-3 transition-opacity ${loading ? 'opacity-60' : 'cursor-pointer hover:border-brand'}`}
+    >
       {/* 포스터 */}
       <div className='relative h-[120px] w-[80px] shrink-0 overflow-hidden rounded-lg bg-border'>
         {poster ? (
