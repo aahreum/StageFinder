@@ -110,7 +110,7 @@
   - 지역 필터
   - ✅ 검증: 지역 기준 필터링
 
-- [ ] implement-date-filter
+- [x] implement-date-filter
   - 날짜 필터
   - ✅ 검증: 날짜 기준 필터링
 

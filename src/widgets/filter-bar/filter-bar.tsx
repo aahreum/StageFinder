@@ -1,5 +1,6 @@
 import { GenreFilter } from '@/features/genre-filter';
 import { RegionFilter } from '@/features/region-filter';
+import { DateFilter } from '@/features/date-filter';
 
 interface Props {
   genres: string[];
@@ -8,6 +9,9 @@ interface Props {
   areas: string[];
   selectedArea: string | null;
   onAreaChange: (area: string | null) => void;
+  dateFrom: string | null;
+  dateTo: string | null;
+  onDateChange: (from: string | null, to: string | null) => void;
 }
 
 export function FilterBar({
@@ -17,6 +21,9 @@ export function FilterBar({
   areas,
   selectedArea,
   onAreaChange,
+  dateFrom,
+  dateTo,
+  onDateChange,
 }: Props) {
   return (
     <div className='border-b border-border'>
@@ -30,6 +37,7 @@ export function FilterBar({
         selected={selectedArea}
         onChange={onAreaChange}
       />
+      <DateFilter dateFrom={dateFrom} dateTo={dateTo} onChange={onDateChange} />
     </div>
   );
 }
