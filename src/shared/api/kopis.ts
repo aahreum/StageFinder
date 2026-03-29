@@ -28,6 +28,39 @@ export interface FetchPerformancesParams {
   prfstate?: '01' | '02' | '03'; // 01:예정 02:공연중 03:완료
 }
 
+export interface KopisRelate {
+  relatenm: string; // 예매처명
+  relateurl: string; // 예매처 URL
+}
+
+/** 공연 상세 조회 (예매처 URL 포함) */
+export async function fetchPerformanceDetail(id: string): Promise<KopisRelate[]> {
+  const apiKey = process.env.KOPIS_API_KEY?.trim();
+  if (!apiKey) throw new Error('KOPIS_API_KEY 환경변수가 설정되지 않았습니다.');
+
+  const res = await fetch(`${BASE_URL}/${id}?service=${apiKey}`, {
+    next: { revalidate: 3600 },
+  });
+  if (!res.ok) throw new Error(`KOPIS API 오류: ${res.status}`);
+
+  const xml = await res.text();
+
+  let parsed: ReturnType<typeof parser.parse>;
+  try {
+    parsed = parser.parse(xml);
+  } catch {
+    throw new Error('KOPIS API 상세 응답 파싱 실패');
+  }
+
+  const db = parsed?.dbs?.db;
+  if (!db) return [];
+
+  const relate = db.relates?.relate;
+  if (!relate) return [];
+
+  return Array.isArray(relate) ? relate : [relate];
+}
+
 export async function fetchPerformances(
   params: FetchPerformancesParams,
 ): Promise<KopisPerformanceRaw[]> {
