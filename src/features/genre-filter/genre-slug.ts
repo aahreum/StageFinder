@@ -1,5 +1,5 @@
 /** KOPIS genrenm 값 → URL-safe 영어 slug 매핑 */
-const GENRE_TO_SLUG: Record<string, string> = {
+export const GENRE_TO_SLUG: Record<string, string> = {
   연극: 'play',
   뮤지컬: 'musical',
   '무용(서양/한국무용)': 'dance',
