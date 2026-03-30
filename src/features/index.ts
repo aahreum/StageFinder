@@ -2,3 +2,4 @@
 export { GenreFilter } from "./genre-filter";
 export { RegionFilter, REGION_OPTIONS } from "./region-filter";
 export { DateFilter } from "./date-filter";
+export { SearchInput } from "./search-input";

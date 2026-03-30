@@ -13,6 +13,7 @@ import {
 } from "@/features/genre-filter";
 import { RegionFilter } from "@/features/region-filter";
 import { DateFilter, getDateRangeParams, type DateRange } from "@/features/date-filter";
+import { SearchInput } from "@/features/search-input";
 import type { FetchPerformancesParams } from "@/shared";
 
 // region이 바뀌어도 항상 고정 표시할 장르 목록
@@ -29,6 +30,7 @@ export function PerformanceList({ params }: Props) {
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const queryParams = useMemo(
     () => ({
@@ -66,6 +68,7 @@ export function PerformanceList({ params }: Props) {
 
   return (
     <div className="flex flex-1 flex-col">
+      <SearchInput value={searchQuery} onChange={setSearchQuery} />
       <DateFilter
         selected={selectedDateRange}
         onChange={(range) => {
