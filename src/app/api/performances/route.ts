@@ -12,6 +12,9 @@ export async function GET(request: Request) {
     ...(searchParams.get('signgucode') && {
       signgucode: searchParams.get('signgucode')!,
     }),
+    ...(searchParams.get('shcate') && {
+      shcate: searchParams.get('shcate')!,
+    }),
     ...(searchParams.get('prfstate') && {
       prfstate: searchParams.get(
         'prfstate',
