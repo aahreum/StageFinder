@@ -10,6 +10,7 @@ export async function fetchPerformancesClient(
     cpage: String(params.cpage ?? 1),
     rows: String(params.rows ?? 20),
     ...(params.signgucode && { signgucode: params.signgucode }),
+    ...(params.shcate && { shcate: params.shcate }),
     ...(params.prfstate && { prfstate: params.prfstate }),
   });
 
