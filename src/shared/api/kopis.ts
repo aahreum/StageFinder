@@ -27,6 +27,7 @@ export interface FetchPerformancesParams {
   signgucode?: string; // 지역 코드
   shcate?: string; // 장르 코드 (AAAA=연극, CCCG=뮤지컬 등)
   prfstate?: '01' | '02' | '03'; // 01:예정 02:공연중 03:완료
+  prfnm?: string; // 공연명 검색
 }
 
 export interface KopisRelate {
@@ -83,6 +84,7 @@ export async function fetchPerformances(
     ...(params.signgucode && { signgucode: params.signgucode }),
     ...(params.shcate && { shcate: params.shcate }),
     ...(params.prfstate && { prfstate: params.prfstate }),
+    ...(params.prfnm && { prfnm: params.prfnm }),
   });
 
   const res = await fetch(`${BASE_URL}?${query}`, {

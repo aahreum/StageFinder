@@ -20,6 +20,7 @@ export async function GET(request: Request) {
         'prfstate',
       ) as FetchPerformancesParams['prfstate'],
     }),
+    ...(searchParams.get('shprfnm') && { shprfnm: searchParams.get('shprfnm')! }),
   };
 
   try {

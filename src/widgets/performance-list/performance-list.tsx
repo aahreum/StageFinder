@@ -42,33 +42,53 @@ export function PerformanceList({ params }: Props) {
       ...(selectedRegion && { signgucode: selectedRegion }),
       // 장르 필터를 서버사이드로 전달 (클라이언트 필터링 대신 KOPIS shcate 사용)
       ...(selectedGenre && { shcate: GENRE_TO_KOPIS_CODE[selectedGenre] }),
+      // 공연명 검색 (엔터 입력 시 확정)
+      ...(searchQuery && { prfnm: searchQuery }),
     }),
-    [params, page, selectedRegion, selectedGenre, selectedDateRange],
+    [params, page, selectedRegion, selectedGenre, selectedDateRange, searchQuery],
   );
 
   const { data, isPending, error, isError } = usePerformances(queryParams);
 
   const list = useMemo<Performance[]>(() => data ?? [], [data]);
 
-  if (isPending) {
+  // 리스트 영역 렌더링 (필터 UI는 항상 마운트 유지)
+  const renderList = () => {
+    if (isPending) {
+      return (
+        <div className="flex flex-1 items-center justify-center text-subtle">
+          불러오는 중...
+        </div>
+      );
+    }
+    if (isError) {
+      return (
+        <div className="flex flex-1 items-center justify-center text-error">
+          오류가 발생했습니다: {error.message}
+        </div>
+      );
+    }
+    if (list.length === 0) {
+      return (
+        <div className="flex flex-1 items-center justify-center text-subtle">
+          공연 정보가 없습니다.
+        </div>
+      );
+    }
     return (
-      <div className="flex flex-1 items-center justify-center text-subtle">
-        불러오는 중...
-      </div>
+      <ul className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
+        {list.map((performance) => (
+          <li key={performance.id}>
+            <PerformanceCard performance={performance} />
+          </li>
+        ))}
+      </ul>
     );
-  }
-
-  if (isError) {
-    return (
-      <div className="flex flex-1 items-center justify-center text-error">
-        오류가 발생했습니다: {error.message}
-      </div>
-    );
-  }
+  };
 
   return (
     <div className="flex flex-1 flex-col">
-      <SearchInput value={searchQuery} onChange={setSearchQuery} />
+      <SearchInput onSearch={(q) => { setSearchQuery(q); setPage(1); }} />
       <DateFilter
         selected={selectedDateRange}
         onChange={(range) => {
@@ -92,19 +112,7 @@ export function PerformanceList({ params }: Props) {
         }}
       />
 
-      {list.length === 0 ? (
-        <div className="flex flex-1 items-center justify-center text-subtle">
-          공연 정보가 없습니다.
-        </div>
-      ) : (
-        <ul className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
-          {list.map((performance) => (
-            <li key={performance.id}>
-              <PerformanceCard performance={performance} />
-            </li>
-          ))}
-        </ul>
-      )}
+      {renderList()}
 
       {/* 페이지네이션 */}
       <div className="flex items-center justify-center gap-4 border-t border-border py-4">
