@@ -52,21 +52,39 @@ export function PerformanceList({ params }: Props) {
 
   const list = useMemo<Performance[]>(() => data ?? [], [data]);
 
-  if (isPending) {
+  // 리스트 영역 렌더링 (필터 UI는 항상 마운트 유지)
+  const renderList = () => {
+    if (isPending) {
+      return (
+        <div className="flex flex-1 items-center justify-center text-subtle">
+          불러오는 중...
+        </div>
+      );
+    }
+    if (isError) {
+      return (
+        <div className="flex flex-1 items-center justify-center text-error">
+          오류가 발생했습니다: {error.message}
+        </div>
+      );
+    }
+    if (list.length === 0) {
+      return (
+        <div className="flex flex-1 items-center justify-center text-subtle">
+          공연 정보가 없습니다.
+        </div>
+      );
+    }
     return (
-      <div className="flex flex-1 items-center justify-center text-subtle">
-        불러오는 중...
-      </div>
+      <ul className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
+        {list.map((performance) => (
+          <li key={performance.id}>
+            <PerformanceCard performance={performance} />
+          </li>
+        ))}
+      </ul>
     );
-  }
-
-  if (isError) {
-    return (
-      <div className="flex flex-1 items-center justify-center text-error">
-        오류가 발생했습니다: {error.message}
-      </div>
-    );
-  }
+  };
 
   return (
     <div className="flex flex-1 flex-col">
@@ -94,19 +112,7 @@ export function PerformanceList({ params }: Props) {
         }}
       />
 
-      {list.length === 0 ? (
-        <div className="flex flex-1 items-center justify-center text-subtle">
-          공연 정보가 없습니다.
-        </div>
-      ) : (
-        <ul className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
-          {list.map((performance) => (
-            <li key={performance.id}>
-              <PerformanceCard performance={performance} />
-            </li>
-          ))}
-        </ul>
-      )}
+      {renderList()}
 
       {/* 페이지네이션 */}
       <div className="flex items-center justify-center gap-4 border-t border-border py-4">
