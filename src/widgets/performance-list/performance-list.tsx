@@ -12,6 +12,7 @@ import {
   GENRE_TO_KOPIS_CODE,
 } from "@/features/genre-filter";
 import { RegionFilter } from "@/features/region-filter";
+import { DateFilter, getDateRangeParams, type DateRange } from "@/features/date-filter";
 import type { FetchPerformancesParams } from "@/shared";
 
 // region이 바뀌어도 항상 고정 표시할 장르 목록
@@ -27,17 +28,20 @@ export function PerformanceList({ params }: Props) {
   const [page, setPage] = useState(1);
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+  const [selectedDateRange, setSelectedDateRange] = useState<DateRange | null>(null);
 
   const queryParams = useMemo(
     () => ({
       ...params,
+      // 날짜 범위 선택 시 base params의 stdate/eddate를 덮어씀
+      ...(selectedDateRange && getDateRangeParams(selectedDateRange)),
       cpage: page,
       rows: PAGE_SIZE,
       ...(selectedRegion && { signgucode: selectedRegion }),
       // 장르 필터를 서버사이드로 전달 (클라이언트 필터링 대신 KOPIS shcate 사용)
       ...(selectedGenre && { shcate: GENRE_TO_KOPIS_CODE[selectedGenre] }),
     }),
-    [params, page, selectedRegion, selectedGenre],
+    [params, page, selectedRegion, selectedGenre, selectedDateRange],
   );
 
   const { data, isPending, error, isError } = usePerformances(queryParams);
@@ -62,6 +66,13 @@ export function PerformanceList({ params }: Props) {
 
   return (
     <div className="flex flex-1 flex-col">
+      <DateFilter
+        selected={selectedDateRange}
+        onChange={(range) => {
+          setSelectedDateRange(range);
+          setPage(1);
+        }}
+      />
       <RegionFilter
         selected={selectedRegion}
         onChange={(code) => {
