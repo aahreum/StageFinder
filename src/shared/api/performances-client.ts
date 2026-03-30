@@ -12,7 +12,7 @@ export async function fetchPerformancesClient(
     ...(params.signgucode && { signgucode: params.signgucode }),
     ...(params.shcate && { shcate: params.shcate }),
     ...(params.prfstate && { prfstate: params.prfstate }),
-    ...(params.prfnm && { prfnm: params.prfnm }),
+    ...(params.shprfnm && { shprfnm: params.shprfnm }),
   });
 
   const res = await fetch(`/api/performances?${query}`);
