@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   usePerformances,
   PerformanceCard,
@@ -31,6 +31,16 @@ export function PerformanceList({ params }: Props) {
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  // debounce: 입력 후 300ms 뒤 API 요청
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const queryParams = useMemo(
     () => ({
@@ -42,8 +52,10 @@ export function PerformanceList({ params }: Props) {
       ...(selectedRegion && { signgucode: selectedRegion }),
       // 장르 필터를 서버사이드로 전달 (클라이언트 필터링 대신 KOPIS shcate 사용)
       ...(selectedGenre && { shcate: GENRE_TO_KOPIS_CODE[selectedGenre] }),
+      // 공연명 검색 (debounce 적용)
+      ...(debouncedQuery && { prfnm: debouncedQuery }),
     }),
-    [params, page, selectedRegion, selectedGenre, selectedDateRange],
+    [params, page, selectedRegion, selectedGenre, selectedDateRange, debouncedQuery],
   );
 
   const { data, isPending, error, isError } = usePerformances(queryParams);
