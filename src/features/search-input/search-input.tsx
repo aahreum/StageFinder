@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type KeyboardEvent } from 'react';
+import { useState } from 'react';
 
 interface SearchInputProps {
   onSearch: (value: string) => void;
@@ -9,8 +9,9 @@ interface SearchInputProps {
 export function SearchInput({ onSearch }: SearchInputProps) {
   const [inputValue, setInputValue] = useState('');
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') onSearch(inputValue);
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    onSearch(inputValue.trim());
   };
 
   const handleClear = () => {
@@ -19,13 +20,12 @@ export function SearchInput({ onSearch }: SearchInputProps) {
   };
 
   return (
-    <div className='px-4 py-2'>
+    <form onSubmit={handleSubmit} className='px-4 py-2'>
       <div className='relative flex items-center'>
         <input
           type='text'
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={handleKeyDown}
           placeholder='공연명 검색 후 엔터'
           className='w-full rounded-lg border border-border bg-transparent px-3 py-2 pr-8 text-sm outline-none placeholder:text-subtle focus:border-brand'
         />
@@ -40,6 +40,6 @@ export function SearchInput({ onSearch }: SearchInputProps) {
           </button>
         )}
       </div>
-    </div>
+    </form>
   );
 }
