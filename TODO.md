@@ -64,9 +64,34 @@
   - STATUS_MAP "완료" → "공연완료" 버그 수정
   - ✅ 검증: 지역 선택 시 KOPIS에 signgucode 전달, 전체 선택 시 전체 표시
 
-- [ ] implement-date-filter
-  - 날짜 필터
-  - ✅ 검증: 날짜 기준 필터링
+- [x] implement-booking-url
+  - PerformanceCard 클릭 시 KOPIS 상세 API로 예매처 URL 조회 후 새 탭 이동
+  - ✅ 검증: 카드 클릭 → 예매처 URL 새 탭 오픈
+
+- [x] fix-filter-bugs
+  - region signgucode 매핑 수정 (법정동코드 기준)
+  - region 변경 시 genre 초기화 제거
+  - genre 필터 고정 목록으로 변경 (데이터 기반 → 정적 목록)
+  - ✅ 검증: 전남 선택 → 전남 데이터, genre는 region 무관하게 고정
+
+- [x] fix-genre-filter-pagination
+  - 장르 필터를 클라이언트사이드 → KOPIS shcate 파라미터 서버사이드로 전환
+  - 20개씩 정확히 페이지네이션 되도록 수정
+  - ✅ 검증: 장르 선택 시 20개 표시, 다음 페이지도 20개
+
+- [x] implement-date-filter
+  - 날짜 필터 (이번 주 / 이번 달 / 다음 달)
+  - KOPIS stdate/eddate 서버사이드 파라미터로 구현
+  - ✅ 검증: 날짜 선택 시 해당 범위 공연만 표시
+
+- [x] fix-shcate-not-forwarded
+  - performances-client.ts, route.ts에서 shcate 파라미터 누락 수정
+  - ✅ 검증: genre + region, genre + date 동시 적용 시 장르 필터링 동작
+
+- [x] fix-genre-kopis-code-mapping
+  - GENRE_TO_KOPIS_CODE 잘못된 코드 수정
+  - 뮤지컬: CCCG → GGGA, 대중음악: GGGA → CCCE
+  - ✅ 검증: 뮤지컬 필터 결과 표시, 대중음악 필터에 뮤지컬 미표시
 
 ---
 
@@ -127,4 +152,3 @@
 - API 호출 최소화
 - KOPIS 응답 정규화 필요
 - FSD 구조 준수
-
