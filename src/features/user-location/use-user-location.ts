@@ -1,11 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-
-export interface Coordinates {
-  lat: number;
-  lng: number;
-}
+import type { Coordinates } from '@/shared';
 
 export function useUserLocation() {
   const [location, setLocation] = useState<Coordinates | null>(null);
@@ -13,6 +9,8 @@ export function useUserLocation() {
   const [error, setError] = useState<string | null>(null);
 
   const getLocation = useCallback(() => {
+    if (isLoading) return;
+
     if (!navigator.geolocation) {
       setError('이 브라우저는 위치 조회를 지원하지 않습니다.');
       return;
@@ -34,7 +32,7 @@ export function useUserLocation() {
         setIsLoading(false);
       },
     );
-  }, []);
+  }, [isLoading]);
 
   return { location, isLoading, error, getLocation };
 }
