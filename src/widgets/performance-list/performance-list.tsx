@@ -43,7 +43,7 @@ export function PerformanceList({ params }: Props) {
       // 장르 필터를 서버사이드로 전달 (클라이언트 필터링 대신 KOPIS shcate 사용)
       ...(selectedGenre && { shcate: GENRE_TO_KOPIS_CODE[selectedGenre] }),
       // 공연명 검색 (엔터 입력 시 확정)
-      ...(searchQuery && { prfnm: searchQuery }),
+      ...(searchQuery && { shprfnm: searchQuery }),
     }),
     [params, page, selectedRegion, selectedGenre, selectedDateRange, searchQuery],
   );
