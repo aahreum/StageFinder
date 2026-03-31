@@ -97,11 +97,11 @@
 
 ## Phase 4: 검색
 
-- [ ] implement-search-input
+- [x] implement-search-input
   - 검색 input UI
   - ✅ 검증: 입력 상태 관리
 
-- [ ] implement-search-logic
+- [x] implement-search-logic
   - 공연명/출연진 검색
   - ✅ 검증: 키워드 기반 필터링
 
@@ -109,8 +109,9 @@
 
 ## Phase 5: 위치 기반
 
-- [ ] get-user-location
+- [x] get-user-location
   - Geolocation API 사용
+  - useUserLocation hook: location / isLoading / error / getLocation
   - ✅ 검증: 위치 정상 반환
 
 - [ ] implement-haversine-distance
