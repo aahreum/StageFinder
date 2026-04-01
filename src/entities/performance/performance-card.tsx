@@ -13,9 +13,10 @@ export const STATUS_COLOR: Record<Performance["status"], string> = {
 
 interface Props {
   performance: Performance;
+  distance?: number; // km (가까운 순 활성 시)
 }
 
-export function PerformanceCard({ performance }: Props) {
+export function PerformanceCard({ performance, distance }: Props) {
   const [loading, setLoading] = useState(false);
 
   const {
@@ -85,9 +86,14 @@ export function PerformanceCard({ performance }: Props) {
         {/* 공연장 */}
         <p className='truncate text-sm text-subtle'>{venue}</p>
 
-        {/* 날짜 · 지역 */}
+        {/* 날짜 · 지역 · 거리 */}
         <p className='mt-auto text-xs text-subtle'>
           {startDate} ~ {endDate} · {area}
+          {distance !== undefined && (
+            <span className='ml-1.5 font-medium text-brand'>
+              약 {distance < 1 ? `${Math.round(distance * 1000)}m` : `${distance.toFixed(1)}km`}
+            </span>
+          )}
         </p>
       </div>
     </article>
