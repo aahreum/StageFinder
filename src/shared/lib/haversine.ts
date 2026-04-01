@@ -16,5 +16,6 @@ export function haversineDistance(a: Coordinates, b: Coordinates): number {
     sinDLat * sinDLat +
     Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * sinDLng * sinDLng;
 
-  return 2 * EARTH_RADIUS_KM * Math.asin(Math.sqrt(h));
+  // 부동소수점 오차로 h가 1을 초과하면 Math.asin이 NaN을 반환하므로 클램핑
+  return 2 * EARTH_RADIUS_KM * Math.asin(Math.sqrt(Math.min(1, h)));
 }
