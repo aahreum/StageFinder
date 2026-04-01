@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   usePerformances,
   PerformanceCard,
@@ -35,7 +35,38 @@ export function PerformanceList({ params }: Props) {
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortNear, setSortNear] = useState(false);
+  // 위치 조회 중 정렬 대기 상태 (조회 완료 후 자동 활성화)
+  const [sortPending, setSortPending] = useState(false);
   const { location, isLoading: locationLoading, error: locationError, getLocation } = useUserLocation();
+
+  // 위치 조회 완료 → 정렬 활성화
+  useEffect(() => {
+    if (sortPending && location) {
+      setSortNear(true);
+      setSortPending(false);
+    }
+  }, [sortPending, location]);
+
+  // 위치 조회 실패 → 대기 해제
+  useEffect(() => {
+    if (sortPending && locationError) {
+      setSortPending(false);
+    }
+  }, [sortPending, locationError]);
+
+  const handleSortToggle = () => {
+    if (sortNear) {
+      setSortNear(false);
+      return;
+    }
+    if (location) {
+      setSortNear(true);
+    } else {
+      // 위치 없으면 조회 요청 후 완료 시 자동 활성화
+      getLocation();
+      setSortPending(true);
+    }
+  };
 
   const queryParams = useMemo(
     () => ({
@@ -125,13 +156,11 @@ export function PerformanceList({ params }: Props) {
       <div className="flex items-center gap-2 px-4 py-2 border-b border-border">
         <button
           type="button"
-          onClick={() => {
-            if (!location) getLocation();
-            setSortNear((prev) => !prev);
-          }}
+          onClick={handleSortToggle}
+          disabled={locationLoading || sortPending}
           className={filterBtnClass(sortNear)}
         >
-          {locationLoading ? '위치 조회 중...' : '가까운 순'}
+          {locationLoading || sortPending ? '위치 조회 중...' : '가까운 순'}
         </button>
         {locationError && (
           <span className="text-xs text-error">{locationError}</span>
