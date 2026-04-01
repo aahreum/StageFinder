@@ -6,3 +6,4 @@ export { QueryProvider } from "./lib/query-provider";
 export { getPerformanceDateParams } from "./lib/date-params";
 export { filterBtnClass } from "./ui/button-class";
 export type { Coordinates } from "./types/coordinates";
+export { haversineDistance } from "./lib/haversine";
