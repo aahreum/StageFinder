@@ -114,9 +114,10 @@
   - useUserLocation hook: location / isLoading / error / getLocation
   - ✅ 검증: 위치 정상 반환
 
-- [ ] implement-haversine-distance
+- [x] implement-haversine-distance
   - 거리 계산 함수 구현
-  - ✅ 검증: 거리 계산 정확
+  - shared/lib/haversine.ts: haversineDistance(a, b) → km
+  - ✅ 검증: 서울-부산 325.1km, 동일 좌표 0km
 
 - [ ] sort-by-distance
   - 가까운 순 정렬
