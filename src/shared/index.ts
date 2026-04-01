@@ -7,3 +7,4 @@ export { getPerformanceDateParams } from "./lib/date-params";
 export { filterBtnClass } from "./ui/button-class";
 export type { Coordinates } from "./types/coordinates";
 export { haversineDistance } from "./lib/haversine";
+export { REGION_COORDS } from "./lib/region-coords";

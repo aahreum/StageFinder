@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   usePerformances,
   PerformanceCard,
@@ -14,6 +14,9 @@ import {
 import { RegionFilter } from "@/features/region-filter";
 import { DateFilter, getDateRangeParams, type DateRange } from "@/features/date-filter";
 import { SearchInput } from "@/features/search-input";
+import { useUserLocation } from "@/features/user-location";
+import { sortByDistance } from "@/features/sort-by-distance";
+import { filterBtnClass } from "@/shared/ui/button-class";
 import type { FetchPerformancesParams } from "@/shared";
 
 // region이 바뀌어도 항상 고정 표시할 장르 목록
@@ -31,6 +34,39 @@ export function PerformanceList({ params }: Props) {
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortNear, setSortNear] = useState(false);
+  // 위치 조회 중 정렬 대기 상태 (조회 완료 후 자동 활성화)
+  const [sortPending, setSortPending] = useState(false);
+  const { location, isLoading: locationLoading, error: locationError, getLocation } = useUserLocation();
+
+  // 위치 조회 완료 → 정렬 활성화
+  useEffect(() => {
+    if (sortPending && location) {
+      setSortNear(true);
+      setSortPending(false);
+    }
+  }, [sortPending, location]);
+
+  // 위치 조회 실패 → 대기 해제
+  useEffect(() => {
+    if (sortPending && locationError) {
+      setSortPending(false);
+    }
+  }, [sortPending, locationError]);
+
+  const handleSortToggle = () => {
+    if (sortNear) {
+      setSortNear(false);
+      return;
+    }
+    if (location) {
+      setSortNear(true);
+    } else {
+      // 위치 없으면 조회 요청 후 완료 시 자동 활성화
+      getLocation();
+      setSortPending(true);
+    }
+  };
 
   const queryParams = useMemo(
     () => ({
@@ -50,7 +86,11 @@ export function PerformanceList({ params }: Props) {
 
   const { data, isPending, error, isError } = usePerformances(queryParams);
 
-  const list = useMemo<Performance[]>(() => data ?? [], [data]);
+  const list = useMemo<Performance[]>(() => {
+    const base = data ?? [];
+    if (sortNear && location) return sortByDistance(base, location);
+    return base;
+  }, [data, sortNear, location]);
 
   // 리스트 영역 렌더링 (필터 UI는 항상 마운트 유지)
   const renderList = () => {
@@ -111,6 +151,21 @@ export function PerformanceList({ params }: Props) {
           setPage(1);
         }}
       />
+
+      {/* 가까운 순 정렬 */}
+      <div className="flex items-center gap-2 px-4 py-2 border-b border-border">
+        <button
+          type="button"
+          onClick={handleSortToggle}
+          disabled={locationLoading || sortPending}
+          className={filterBtnClass(sortNear)}
+        >
+          {locationLoading || sortPending ? '위치 조회 중...' : '가까운 순'}
+        </button>
+        {locationError && (
+          <span className="text-xs text-error">{locationError}</span>
+        )}
+      </div>
 
       {renderList()}
 
