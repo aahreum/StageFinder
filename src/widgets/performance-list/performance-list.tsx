@@ -17,6 +17,7 @@ import { SearchInput } from "@/features/search-input";
 import { useUserLocation } from "@/features/user-location";
 import { sortByDistance } from "@/features/sort-by-distance";
 import { filterBtnClass } from "@/shared/ui/button-class";
+import { haversineDistance, REGION_COORDS } from "@/shared";
 import type { FetchPerformancesParams } from "@/shared";
 
 // region이 바뀌어도 항상 고정 표시할 장르 목록
@@ -37,7 +38,7 @@ export function PerformanceList({ params }: Props) {
   const [sortNear, setSortNear] = useState(false);
   // 위치 조회 중 정렬 대기 상태 (조회 완료 후 자동 활성화)
   const [sortPending, setSortPending] = useState(false);
-  const { location, isLoading: locationLoading, error: locationError, getLocation } = useUserLocation();
+  const { location, address, isLoading: locationLoading, error: locationError, getLocation } = useUserLocation();
 
   // 위치 조회 완료 → 정렬 활성화
   useEffect(() => {
@@ -92,6 +93,19 @@ export function PerformanceList({ params }: Props) {
     return base;
   }, [data, sortNear, location]);
 
+  // 가까운 순 활성 시 각 공연의 거리(km) 계산
+  const distanceMap = useMemo<Record<string, number>>(() => {
+    if (!sortNear || !location) return {};
+    return Object.fromEntries(
+      list
+        .map((p) => {
+          const coords = REGION_COORDS[p.area];
+          return coords ? [p.id, haversineDistance(location, coords)] : null;
+        })
+        .filter((entry): entry is [string, number] => entry !== null),
+    );
+  }, [list, sortNear, location]);
+
   // 리스트 영역 렌더링 (필터 UI는 항상 마운트 유지)
   const renderList = () => {
     if (isPending) {
@@ -119,7 +133,10 @@ export function PerformanceList({ params }: Props) {
       <ul className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
         {list.map((performance) => (
           <li key={performance.id}>
-            <PerformanceCard performance={performance} />
+            <PerformanceCard
+              performance={performance}
+              distance={distanceMap[performance.id]}
+            />
           </li>
         ))}
       </ul>
@@ -162,6 +179,10 @@ export function PerformanceList({ params }: Props) {
         >
           {locationLoading || sortPending ? '위치 조회 중...' : '가까운 순'}
         </button>
+        {/* 현재 위치 표시 */}
+        {address && (
+          <span className="text-xs text-subtle">📍 {address}</span>
+        )}
         {locationError && (
           <span className="text-xs text-error">{locationError}</span>
         )}
