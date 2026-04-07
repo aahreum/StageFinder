@@ -5,3 +5,4 @@ export { DateFilter } from "./date-filter";
 export { SearchInput } from "./search-input";
 export { useUserLocation } from "./user-location";
 export { sortByDistance } from "./sort-by-distance";
+export { SaveUserPreference } from "./save-user-preference";

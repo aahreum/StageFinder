@@ -119,20 +119,29 @@
   - shared/lib/haversine.ts: haversineDistance(a, b) → km
   - ✅ 검증: 서울-부산 325.1km, 동일 좌표 0km
 
-- [ ] sort-by-distance
+- [x] sort-by-distance
   - 가까운 순 정렬
-  - ✅ 검증: 거리 기준 정렬
+  - features/sort-by-distance: sortByDistance(performances, userCoords)
+  - shared/lib/region-coords.ts: KOPIS area → 지역 중심 좌표 매핑
+  - "가까운 순" 토글 버튼 (위치 권한 요청 + 정렬 적용)
+  - ✅ 검증: 서울 기준 서울→부산→제주 순 정렬, 좌표불명 지역 후순위
 
 ---
 
 ## Phase 6: 알림
 
-- [ ] create-user-preference-table
-  - Supabase 테이블 생성
-  - ✅ 검증: 데이터 저장 가능
+- [x] create-user-preference-table
+  - Supabase user_preferences 테이블 생성
+  - supabase/migrations/20260404131237_create_user_preferences.sql
+  - 컬럼: id, email, genre, region, keyword, created_at
+  - email UNIQUE 인덱스, RLS 활성화 (public insert/select)
+  - ✅ 검증: INSERT/SELECT 정상 동작
 
-- [ ] save-user-preference
+- [x] save-user-preference
   - 관심 조건 저장
+  - POST /api/user-preferences → Supabase insert
+  - features/save-user-preference: 이메일 폼 (현재 필터 자동 전달)
+  - 중복 이메일 409 처리, 타입 에러 없음
   - ✅ 검증: DB 저장 성공
 
 - [ ] setup-cron-job
