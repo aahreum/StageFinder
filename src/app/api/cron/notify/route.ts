@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Vercel Cron Jobs가 매일 00:00 UTC(KST 09:00)에 호출하는 엔드포인트
+// Supabase pg_cron이 매일 00:00 UTC(KST 09:00)에 호출하는 엔드포인트
 // CRON_SECRET으로 무단 호출 차단
 export async function GET(req: NextRequest) {
   const cronSecret = process.env.CRON_SECRET;
