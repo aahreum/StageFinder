@@ -144,9 +144,10 @@
   - 중복 이메일 409 처리, 타입 에러 없음
   - ✅ 검증: DB 저장 성공
 
-- [ ] setup-cron-job
-  - 스케줄링 설정
-  - ✅ 검증: cron 실행됨
+- [x] setup-cron-job
+  - vercel.json: 매일 09:00 UTC `/api/cron/notify` 호출
+  - CRON_SECRET 헤더 검증으로 무단 호출 차단
+  - ✅ 검증: 타입 에러 없음, 401/200 분기 정상
 
 - [ ] compare-new-performances
   - 신규 데이터 비교
