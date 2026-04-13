@@ -16,6 +16,7 @@ import { DateFilter, getDateRangeParams, type DateRange } from "@/features/date-
 import { SearchInput } from "@/features/search-input";
 import { useUserLocation } from "@/features/user-location";
 import { sortByDistance } from "@/features/sort-by-distance";
+import { SaveUserPreference } from "@/features/save-user-preference";
 import { filterBtnClass } from "@/shared/ui/button-class";
 import { haversineDistance, REGION_COORDS } from "@/shared";
 import type { FetchPerformancesParams } from "@/shared";
@@ -187,6 +188,12 @@ export function PerformanceList({ params }: Props) {
           <span className="text-xs text-error">{locationError}</span>
         )}
       </div>
+
+      <SaveUserPreference
+        genre={selectedGenre}
+        region={selectedRegion}
+        keyword={searchQuery}
+      />
 
       {renderList()}
 
